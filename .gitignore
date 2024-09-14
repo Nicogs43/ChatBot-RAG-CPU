@@ -164,3 +164,6 @@ old_scripts/
 vectorstore/
 model/
 reranker/
+Scripts/
+share/
+include/
