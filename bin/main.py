@@ -2,7 +2,7 @@ from vectordb import load_hf_embedding_model, load_reranker_model
 from chatbot import bot , request_cancel,initialize_openvino_pipeline
 from config import vectorstore_path, ov_config
 from langchain_community.vectorstores import FAISS
-import gradio as gr
+#import gradio as gr
 import warnings
 warnings.filterwarnings(
     "ignore",
@@ -15,6 +15,7 @@ import time
 def main():
     print("Loading vectorstore")
     print(vectorstore_path)
+    output = None
     try:
         vectorstore = FAISS.load_local(vectorstore_path, embeddings=load_hf_embedding_model(), allow_dangerous_deserialization=True)
     except Exception as e:
@@ -25,34 +26,42 @@ def main():
 
     print("Loading openvino pipeline")
     ov_llm = initialize_openvino_pipeline(ov_config)
+    try:
+        #take the input from the user inside a loop to keep the chatbot running
+        while True:
+            query = input("Insert here your question (type exit to quit): ")
+            if query == "exit":
+                if output:
+                    request_cancel(ov_llm=ov_llm)
+                break
+            start = time.time()
+            output = bot(
+                vectorstore=vectorstore,
+                query=query,
+                ov_llm=ov_llm,
+                vector_search_top_k=5,
+                vector_rerank_top_n=2,
+                reranker=reranker,
+                search_method="similarity_score_threshold",
+                score_threshold=0.5,
+                temperature=0.7,
+                top_p=0.9,
+                top_k=50,
+                repetition_penalty=1.1,
+                hide_full_prompt=True,
+            )
+            print("Time taken: ", time.time() - start)
+            print(output['answer'])
+            request_cancel(ov_llm=ov_llm)
 
-    #take the input from the user inside a loop to keep the chatbot running
-    while True:
-        query = input("Insert here your question (type exit to quit): ")
-        if query == "exit":
-            if output:
-                request_cancel(ov_llm=ov_llm)
-            break
-        start = time.time()
-        output = bot(
-            vectorstore=vectorstore,
-            query=query,
-            ov_llm=ov_llm,
-            vector_search_top_k=3,
-            vector_rerank_top_n=2,
-            reranker=reranker,
-            search_method="similarity_score_threshold",
-            score_threshold=0.2,
-            temperature=0.5,
-            top_p=0.9,
-            top_k=50,
-            repetition_penalty=0.9,
-            hide_full_prompt=True,
-        )
-        print("Time taken: ", time.time() - start)
-        print(output['answer'])
+    except KeyboardInterrupt:
+        print("Session ended.")
+    finally:
+        del vectorstore
+        del reranker
+        del ov_llm
+        print("Resources released.")
 
-        request_cancel(ov_llm=ov_llm)
 
 
 """

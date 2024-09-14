@@ -7,7 +7,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.retrievers import ContextualCompressionRetriever
-from config import vectorstore_path, rag_prompt_template
+from config import vectorstore_path, rag_prompt_template, DEFAULT_RAG_PROMPT
 import gradio as gr
 from langchain.text_splitter import (
     CharacterTextSplitter,
@@ -96,7 +96,6 @@ def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap ):
     Returns:
       vectorstore
     """
-    global db 
     documents = []
     for doc in docs:
         if type(doc) is not str:
@@ -137,7 +136,7 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
         #reranker = load_reranker_model()
         reranker.top_n = vector_rerank_top_n
         retriever = ContextualCompressionRetriever(base_compressor=reranker, base_retriever=retriever)
-    prompt = PromptTemplate.from_template(rag_prompt_template)
+    prompt = PromptTemplate(input_variables=["DEFAULT_RAG_PROMPT", "context", "question"], template=rag_prompt_template)
     combine_docs_chain = create_stuff_documents_chain(llm, prompt)
 
     rag_chain = create_retrieval_chain(retriever, combine_docs_chain)

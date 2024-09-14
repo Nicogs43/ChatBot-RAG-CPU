@@ -3,6 +3,12 @@ from langchain_community.vectorstores import FAISS
 from vectordb import create_rag_chain
 from transformers import TextIteratorStreamer
 import logging
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message="`clean_up_tokenization_spaces` was not set",
+    category=FutureWarning,
+)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,13 +40,14 @@ def initialize_openvino_pipeline(ov_config, max_new_tokens=140):
 
 def bot(
         vectorstore, ov_llm, query, vector_search_top_k, vector_rerank_top_n, search_method, score_threshold, temperature, top_p, top_k, repetition_penalty, hide_full_prompt, reranker=None):
-    streamer = TextIteratorStreamer(
+    """streamer = TextIteratorStreamer( #can be change if I don't want to use a streamer iterator for example in a testing mode
         ov_llm.pipeline.tokenizer,
         timeout=60.0,
         skip_prompt=hide_full_prompt,
         skip_special_tokens=True,
-        clean_up_tokenization_spaces=True,
-    )
+        #decode_kwargs=dict(clean_up_tokenization_spaces=False), even if add this line it will not work to remove a warning
+    )"""
+
     pipeline_kwargs = dict(
         max_new_tokens=1024,
         temperature=temperature,
@@ -48,7 +55,10 @@ def bot(
         top_p=top_p,
         top_k=top_k,
         repetition_penalty=repetition_penalty,
-        streamer=streamer,
+        tokenizer=ov_llm.pipeline.tokenizer,
+        return_full_text=False,
+        hide_full_prompt=hide_full_prompt,
+        #streamer=streamer,
     )
     ov_llm.pipeline_kwargs = pipeline_kwargs
 
