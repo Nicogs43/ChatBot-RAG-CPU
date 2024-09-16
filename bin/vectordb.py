@@ -7,7 +7,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.retrievers import ContextualCompressionRetriever
-from config import vectorstore_path, rag_prompt_template, DEFAULT_RAG_PROMPT
+from config import vectorstore_path, rag_prompt_template, DEFAULT_RAG_PROMPT, pdf_path
 import gradio as gr
 from langchain.text_splitter import (
     CharacterTextSplitter,
@@ -25,7 +25,7 @@ TEXT_SPLITERS = {
     "Markdown": MarkdownTextSplitter,
 }
 
-LOADERS = {".pdf": (PyPDFLoader, {})}
+LOADERS = {".pdf": (PyPDFLoader, {})}  # can be also used PyPDFium2  for pdf loading seems more faster
 
 
 
@@ -34,9 +34,9 @@ def load_hf_embedding_model():
     Load the huggingface model
     Returns: model
     """
-    model_name = "sentence-transformers/all-mpnet-base-v2" #"BAAI/bge-small-en" # this is download the model from huggingface i have downloaded the model in openvino format bu it does not work
+    model_name = "BAAI/bge-small-en-v1.5" #sentence-transformers/all-mpnet-base-v2" #"BAAI/bge-small-en" # this is download the model from huggingface i have downloaded the model in openvino format bu it does not work
     model_kwargs = {'device': 'cpu'}
-    encode_kwargs = {'normalize_embeddings': False, "batch_size": 4}
+    encode_kwargs = {'mean_pooling': False,'normalize_embeddings': True, "batch_size": 4}
     hf = HuggingFaceEmbeddings(
     model_name=model_name,
     model_kwargs=model_kwargs,
@@ -51,7 +51,6 @@ def load_reranker_model():
     Returns: model
     """
     try:
-        global reranker
         rerank_model_name = "../reranker/bge-reranker-v2-m3"
         rerank_model_kwargs = {"device": "CPU"}
         rerank_top_n = 2
@@ -102,7 +101,7 @@ def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap ):
             doc = doc.name
         documents.extend(load_single_document(doc))
 
-    text_splitter = TEXT_SPLITERS[spliter_name](chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    text_splitter = TEXT_SPLITERS[spliter_name](chunk_size=chunk_size, chunk_overlap=chunk_overlap,)
     texts = text_splitter.split_documents(documents)
     db = FAISS.from_documents(texts, load_hf_embedding_model())
     db.save_local(vectorstore_path)
@@ -125,7 +124,7 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
       RAG chain
     """ 
     if vector_rerank_top_n > vector_search_top_k:
-        gr.Warning("Search top k must >= Rerank top n")
+        raise ValueError("Search top k must >= Rerank top n")
 
     if search_method == "similarity_score_threshold":
         search_kwargs = {"k": vector_search_top_k, "score_threshold": score_threshold}
@@ -133,7 +132,6 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
         search_kwargs = {"k": vector_search_top_k}
     retriever = db.as_retriever(search_kwargs=search_kwargs, search_type=search_method)
     if reranker:
-        #reranker = load_reranker_model()
         reranker.top_n = vector_rerank_top_n
         retriever = ContextualCompressionRetriever(base_compressor=reranker, base_retriever=retriever)
     prompt = PromptTemplate(input_variables=["DEFAULT_RAG_PROMPT", "context", "question"], template=rag_prompt_template)
@@ -142,4 +140,7 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
     rag_chain = create_retrieval_chain(retriever, combine_docs_chain)
     return rag_chain
 
-create_vectordb(["../samples/openvino-product-brief.pdf"], "RecursiveCharacter", 400, 50)
+#add the update retriever method
+
+
+create_vectordb([pdf_path], "RecursiveCharacter", 400, 50)

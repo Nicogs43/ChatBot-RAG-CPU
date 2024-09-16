@@ -25,7 +25,6 @@ def convert_to_int8():
     subprocess.run(export_command, shell=True)
 
 def convert_to_int4( int4_mode:str = "SYM"):
-    #model_compression_params = compression_configs.get(model_id.value, compression_configs["default"])
     if (int4_model_dir / "openvino_model.xml").exists():
         return
     #remote_code = model_configuration.get("remote_code", False)

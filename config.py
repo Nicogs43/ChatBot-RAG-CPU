@@ -19,3 +19,5 @@ ov_config = {
     "NUM_STREAMS": "1",
     "CACHE_DIR": "",
 }
+
+pdf_path = "../samples/Ports_chapters_10_to_20.pdf"
