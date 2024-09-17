@@ -1,4 +1,6 @@
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+
 from typing import List
 from langchain_community.vectorstores import FAISS
 from langchain.docstore.document import Document
@@ -7,7 +9,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.retrievers import ContextualCompressionRetriever
-from config import vectorstore_path, rag_prompt_template, DEFAULT_RAG_PROMPT, pdf_path
+from config import vectorstore_path, rag_prompt_template, pdf_path
 import gradio as gr
 from langchain.text_splitter import (
     CharacterTextSplitter,
@@ -23,27 +25,31 @@ TEXT_SPLITERS = {
     "Character": CharacterTextSplitter,
     "RecursiveCharacter": RecursiveCharacterTextSplitter,
     "Markdown": MarkdownTextSplitter,
-}
+    }
 
 LOADERS = {".pdf": (PyPDFLoader, {})}  # can be also used PyPDFium2  for pdf loading seems more faster
 
 
-
+#provare ad usare huggingfacebgeembeddings e poi provare ad inserire con bge-small-en-v1.5 il parametro query_instruction
 def load_hf_embedding_model():
     """
     Load the huggingface model
     Returns: model
     """
-    model_name = "BAAI/bge-small-en-v1.5" #sentence-transformers/all-mpnet-base-v2" #"BAAI/bge-small-en" # this is download the model from huggingface i have downloaded the model in openvino format bu it does not work
-    model_kwargs = {'device': 'cpu'}
-    encode_kwargs = {'mean_pooling': False,'normalize_embeddings': True, "batch_size": 4}
-    hf = HuggingFaceEmbeddings(
-    model_name=model_name,
-    model_kwargs=model_kwargs,
-    encode_kwargs=encode_kwargs,
-)
-    
-    return hf
+    try:
+        model_name = "BAAI/bge-small-en-v1.5" #sentence-transformers/all-mpnet-base-v2" #"BAAI/bge-small-en" # this is download the model from huggingface i have downloaded the model in openvino format bu it does not work
+        model_kwargs = {'device': 'cpu'}
+        encode_kwargs = {'mean_pooling': False,'normalize_embeddings': True, "batch_size": 4}
+        hf = HuggingFaceBgeEmbeddings(
+        model_name=model_name,
+        model_kwargs=model_kwargs,
+        encode_kwargs=encode_kwargs,
+        #query_instruction="", #this is the query instruction because bge-m3 don't need a query instruction
+        )
+        
+        return hf
+    except Exception as e:
+        raise ValueError("Error loading huggingface embedding model{}".format(e))
 
 def load_reranker_model():
     """
@@ -143,4 +149,8 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
 #add the update retriever method
 
 
-create_vectordb([pdf_path], "RecursiveCharacter", 400, 50)
+print(create_vectordb([pdf_path], "RecursiveCharacter", 400, 50))
+
+#fatto prove con bge-m3 con 1000 di chunk size e 50 di chunk overlap e abbasando il score_threshold a 0.2 perchè con 0.5 come prima non trovava nulla
+# ora prova ad rimettere a 400 il chunk size lasciando lo stesso score_trthershold e vedere se anche il retrive con bge-m3 si veloizza perchè per ora è troppo lento 
+#  troppo lento il vector db con bge-m3 con 400 di chunk size e 50 di chunk overlap e score_threshold a 0.2 anche perchè è multi-lingua ma non ci interessa

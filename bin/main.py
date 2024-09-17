@@ -43,7 +43,7 @@ def main():
                 vector_rerank_top_n=2,
                 reranker=reranker,
                 search_method="similarity_score_threshold",
-                score_threshold=0.5,
+                score_threshold=0.6,
                 temperature=0.7,
                 top_p=0.9,
                 top_k=50,
