@@ -2,16 +2,7 @@ from optimum.intel import OVModelForCausalLM
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import os 
 from pathlib import Path
-import shutil
-import nncf
-import openvino as ov
 import subprocess
-
-#from dotenv import load_dotenv
-
-#load_dotenv(verbose=True)
-#cache_dir = os.environ['CACHE_DIR']
-
 
 def convert_to_int8():
     if (int8_model_dir / "openvino_model.xml").exists():
@@ -24,13 +15,13 @@ def convert_to_int8():
     print(export_command)
     subprocess.run(export_command, shell=True)
 
-def convert_to_int4( int4_mode:str = "SYM"):
+def convert_to_int4( int4_mode:str = "SYM", group_size:int = 128, ratio:float = 0.8):
     if (int4_model_dir / "openvino_model.xml").exists():
         return
     #remote_code = model_configuration.get("remote_code", False)
     int4_model_dir.mkdir(parents=True, exist_ok=True)
     export_command_base = "optimum-cli export openvino --model {} --task text-generation-with-past --weight-format int4".format(hf_model_id)
-    int4_compression_args = " --group-size 128 --ratio 0.8"
+    int4_compression_args = " --group-size {} --ratio {}".format(group_size, ratio)
     if int4_mode == "SYM":
         int4_compression_args += " --sym"
     else:
@@ -83,12 +74,23 @@ else:
         if int4_mode not in ["SYM", "ASYM"]:
             print("The mode must be SYM or ASYM")
             exit()
+        group_size = input("Select the group size and press enter")
+        if not group_size.isdigit():
+            print("The group size must be an integer")
+            exit()
+        group_size = int(group_size)
+        ratio = input("Select the ratio and press enter")
+        if not ratio.replace(".", "", 1).isdigit():
+            print("The ratio must be a float")
+            exit()
+        ratio = float(ratio)
+
         tokenizer = AutoTokenizer.from_pretrained(hf_model_id)
         model = AutoModelForCausalLM.from_pretrained(hf_model_id)
         model.save_pretrained(local_model_path)
         tokenizer.save_pretrained(local_model_path)
         int4_model_dir = Path(local_model_path) / "int4"
-        convert_to_int4()
+        convert_to_int4(int4_mode, group_size, ratio)
     
 
 #TODO: re-download the model using trust_remote_code = True in from_pretrained function as suggested in HF documentation

@@ -1,13 +1,12 @@
 DEFAULT_RAG_PROMPT = """\
-You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.\
+You are an assistant for question-answering tasks about maritime domain. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.\
 """
 
-rag_prompt_template = f"""<|system|> {DEFAULT_RAG_PROMPT }<|end|>""" + """
+rag_prompt_template = f"""<|system|> 
+{DEFAULT_RAG_PROMPT }<|end|>""" + """
 <|user|>
 Question: {input} 
-Context: {context} 
-<|end|>
-Answer: 
+Context: {context} <|end|>
 <|assistant|>"""
 
 vectorstore_path = "../vectorstore"

@@ -58,6 +58,8 @@ def bot(
         tokenizer=ov_llm.pipeline.tokenizer,
         return_full_text=False,
         hide_full_prompt=hide_full_prompt,
+        skip_special_tokens=True,
+        skip_prompt=True,
         #streamer=streamer,
     )
     ov_llm.pipeline_kwargs = pipeline_kwargs

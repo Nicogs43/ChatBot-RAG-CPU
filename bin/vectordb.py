@@ -1,6 +1,4 @@
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
-
 from typing import List
 from langchain_community.vectorstores import FAISS
 from langchain.docstore.document import Document
@@ -10,7 +8,6 @@ from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.retrievers import ContextualCompressionRetriever
 from config import vectorstore_path, rag_prompt_template, pdf_path
-import gradio as gr
 from langchain.text_splitter import (
     CharacterTextSplitter,
     RecursiveCharacterTextSplitter,
@@ -31,7 +28,7 @@ LOADERS = {".pdf": (PyPDFLoader, {})}  # can be also used PyPDFium2  for pdf loa
 
 
 #provare ad usare huggingfacebgeembeddings e poi provare ad inserire con bge-small-en-v1.5 il parametro query_instruction
-def load_hf_embedding_model():
+def load_hf_embedding_model() -> HuggingFaceBgeEmbeddings:
     """
     Load the huggingface model
     Returns: model
@@ -51,7 +48,7 @@ def load_hf_embedding_model():
     except Exception as e:
         raise ValueError("Error loading huggingface embedding model{}".format(e))
 
-def load_reranker_model():
+def load_reranker_model() -> OpenVINOReranker:
     """
     Load the reranker model
     Returns: model
@@ -88,7 +85,7 @@ def load_single_document(file_path: str) -> List[Document]:
     raise ValueError(f"File does not exist '{ext}'")
 
 
-def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap ):
+def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap )-> str:
     """
     Create a vectorstore from a list of documents
 
