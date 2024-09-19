@@ -39,7 +39,7 @@ def initialize_openvino_pipeline(ov_config, max_new_tokens=140):
 
 
 def bot(
-        vectorstore, ov_llm, query, vector_search_top_k, vector_rerank_top_n, search_method, score_threshold, temperature, top_p, top_k, repetition_penalty, hide_full_prompt, reranker=None):
+        vectorstore, ov_llm, vector_search_top_k, vector_rerank_top_n, search_method, score_threshold, temperature, top_p, top_k, repetition_penalty, hide_full_prompt, reranker=None):
     """streamer = TextIteratorStreamer( #can be change if I don't want to use a streamer iterator for example in a testing mode
         ov_llm.pipeline.tokenizer,
         timeout=60.0,
@@ -73,11 +73,13 @@ def bot(
         search_method,
         score_threshold,
     )
-    response = rag_chain.invoke(input={"input": query})
-    return response
+    return rag_chain
+    #response = rag_chain.invoke(input={"input": query})
+    #return response
     
 
 def request_cancel(ov_llm):
     ov_llm.pipeline.model.request.cancel()
     
 
+#TODO: prova il stopping criteria per fermare l'output se serve

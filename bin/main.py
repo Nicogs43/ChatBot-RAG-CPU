@@ -26,18 +26,8 @@ def main():
 
     print("Loading openvino pipeline")
     ov_llm = initialize_openvino_pipeline(ov_config)
-    try:
-        #take the input from the user inside a loop to keep the chatbot running
-        while True:
-            query = input("Insert here your question (type exit to quit): ")
-            if query == "exit":
-                if output:
-                    request_cancel(ov_llm=ov_llm)
-                break
-            start = time.time()
-            output = bot(
+    rag_chain = bot(
                 vectorstore=vectorstore,
-                query=query,
                 ov_llm=ov_llm,
                 vector_search_top_k=5,
                 vector_rerank_top_n=2,
@@ -50,6 +40,16 @@ def main():
                 repetition_penalty=1.1,
                 hide_full_prompt=True,
             )
+    try:
+        #take the input from the user inside a loop to keep the chatbot running
+        while True:
+            query = input("Insert here your question (type exit to quit): ")
+            if query == "exit":
+                if output:
+                    request_cancel(ov_llm=ov_llm)
+                break
+            start = time.time()
+            output = rag_chain.invoke(input={"input": query})
             print("Time taken: ", time.time() - start)
             print(output['answer'])
             request_cancel(ov_llm=ov_llm)
@@ -63,50 +63,5 @@ def main():
         print("Resources released.")
 
 
-
-"""
-def chatbot_interface(query, history):
-    if query.lower() == "exit":
-        request_cancel()
-        return history + [[query, "Session ended."]]
-
-    # Generate bot response
-    output = bot(
-        vectorstore=vectorstore,
-        query=query,
-        vector_search_top_k=3,
-        vector_rerank_top_n=2,
-        run_rerank= True,
-        search_method="similarity_score_threshold",
-        score_threshold=0.2,
-        temperature=0.5,
-        top_p=0.9,
-        top_k=50,
-        repetition_penalty=0.9,
-        hide_full_prompt=True,
-    )
-    
-    # Append the user query and bot response to the history
-    history = history + [[query, output]]
-    
-    # Optionally, call request_cancel if needed
-    request_cancel()
-    
-    return history
-
-with gr.Blocks() as demo:
-    gr.Markdown("# Chatbot App")
-    chatbot = gr.Chatbot()
-    state = gr.State([])
-    txt = gr.Textbox(show_label=False, placeholder="Type your message here...")
-
-    def user_interaction(user_input, history):
-        history = history or []
-        new_history = chatbot_interface(user_input, history)
-        return "", new_history
-
-    txt.submit(user_interaction, [txt, state], [txt, chatbot])
-"""
 if __name__ == "__main__":
     main()
-    #demo.launch()
