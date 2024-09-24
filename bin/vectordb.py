@@ -7,7 +7,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.retrievers import ContextualCompressionRetriever
-from config import vectorstore_path, rag_prompt_template, pdf_path
+from config import vectorstore_path, phi_rag_prompt_template, qwen_rag_prompt_template, pdf_path
 from langchain.text_splitter import (
     CharacterTextSplitter,
     RecursiveCharacterTextSplitter,
@@ -43,6 +43,7 @@ def load_hf_embedding_model() -> HuggingFaceBgeEmbeddings:
         encode_kwargs=encode_kwargs,
         #query_instruction="", #this is the query instruction because bge-m3 don't need a query instruction
         )
+        #TODO: try again to use the model in openvino format and the openvino wrapper function
         
         return hf
     except Exception as e:
@@ -137,7 +138,7 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
     if reranker:
         reranker.top_n = vector_rerank_top_n
         retriever = ContextualCompressionRetriever(base_compressor=reranker, base_retriever=retriever)
-    prompt = PromptTemplate(input_variables=["DEFAULT_RAG_PROMPT", "context", "question"], template=rag_prompt_template)
+    prompt = PromptTemplate(input_variables=["QWEN_DEFAULT_RAG_PROMPT", "context", "question"], template=qwen_rag_prompt_template)
     combine_docs_chain = create_stuff_documents_chain(llm, prompt)
 
     rag_chain = create_retrieval_chain(retriever, combine_docs_chain)

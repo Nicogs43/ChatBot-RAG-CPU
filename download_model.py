@@ -50,7 +50,7 @@ if hf_model_id.count("/") != 1:
 model_vendor, model_id = hf_model_id.split("/")
 local_model_path = f'./model/{model_vendor}/{model_id}'
 os.makedirs(local_model_path, exist_ok=True)
-print(f"Downloading the model {model_id} from {model_vendor} and saving it in {local_model_path}")
+print(f"Downloading the model {model_id} from {model_vendor}")
 
 if model_vendor == "OpenVINO":
     tokenizer = AutoTokenizer.from_pretrained(hf_model_id)
@@ -58,18 +58,14 @@ if model_vendor == "OpenVINO":
     model.save_pretrained(local_model_path)
     tokenizer.save_pretrained(local_model_path)
 else:
-    precision = input("The model is not already in OpenVINO IR format. please select the precision of new compressed model (int4 or int8) and press enter ")
-    if precision not in ["int4", "int8"]:
+    precision = input("The model is not already in OpenVINO IR format. please select the precision of new compressed model (int4 or int8 or no_compression) and press enter ")
+    if precision not in ["int4", "int8", "no_compression"]:
         print("The precision must be int4 or int8")
         exit()
     if precision == "int8":
-        tokenizer = AutoTokenizer.from_pretrained(hf_model_id)
-        model = AutoModelForCausalLM.from_pretrained(hf_model_id)
-        model.save_pretrained(local_model_path)
-        tokenizer.save_pretrained(local_model_path)
         int8_model_dir = Path(local_model_path) / "int8"
         convert_to_int8()
-    else:
+    if precision == "int4":
         int4_mode = input("Select the mode of int4 conversion (SYM or ASYM) and press enter")
         if int4_mode not in ["SYM", "ASYM"]:
             print("The mode must be SYM or ASYM")
@@ -85,12 +81,16 @@ else:
             exit()
         ratio = float(ratio)
 
-        tokenizer = AutoTokenizer.from_pretrained(hf_model_id)
-        model = AutoModelForCausalLM.from_pretrained(hf_model_id)
-        model.save_pretrained(local_model_path)
-        tokenizer.save_pretrained(local_model_path)
         int4_model_dir = Path(local_model_path) / "int4"
         convert_to_int4(int4_mode, group_size, ratio)
+    if precision == "no_compression":
+        export_command_base = "optimum-cli export openvino --model {} --task text-generation-with-past".format(hf_model_id)
+        export_command_base += " --trust-remote-code"
+        export_command = export_command_base + " " + str(local_model_path)
+        print(export_command)
+        subprocess.run(export_command, shell=True)
+
+
     
 
 #TODO: re-download the model using trust_remote_code = True in from_pretrained function as suggested in HF documentation

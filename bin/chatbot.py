@@ -26,13 +26,14 @@ def initialize_openvino_pipeline(ov_config, max_new_tokens=140):
     logging.info("Loading openvino pipeline")
     try:
         ov_llm = HuggingFacePipeline.from_model_id(
-        model_id="../model/microsoft/Phi-3.5-mini-instruct/int4",
+        model_id="../model/Qwen/Qwen2.5-0.5B-Instruct",#"../model/microsoft/Phi-3.5-mini-instruct/int4",
         task="text-generation",
         backend="openvino",
         model_kwargs={"device": "CPU", "ov_config": ov_config},
         pipeline_kwargs={"max_new_tokens": max_new_tokens},
 
     )
+        #TODO: add the flash_attention if possible
     except Exception as e:
         raise ValueError("Error loading openvino pipeline{}".format(e))
     return ov_llm
