@@ -1,4 +1,5 @@
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_community.embeddings import OpenVINOBgeEmbeddings
 from typing import List
 from langchain_community.vectorstores import FAISS
 from langchain.docstore.document import Document
@@ -8,6 +9,7 @@ from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.retrievers import ContextualCompressionRetriever
 from config import vectorstore_path, phi_rag_prompt_template, qwen_rag_prompt_template, pdf_path
+import time
 from langchain.text_splitter import (
     CharacterTextSplitter,
     RecursiveCharacterTextSplitter,
@@ -28,13 +30,15 @@ LOADERS = {".pdf": (PyPDFLoader, {})}  # can be also used PyPDFium2  for pdf loa
 
 
 #provare ad usare huggingfacebgeembeddings e poi provare ad inserire con bge-small-en-v1.5 il parametro query_instruction
-def load_hf_embedding_model() -> HuggingFaceBgeEmbeddings:
+def load_hf_embedding_model(model_name: str = "BAAI/bge-small-en-v1.5") -> HuggingFaceBgeEmbeddings:
     """
-    Load the huggingface model
-    Returns: model
+    Args:
+        model_name (str): The name of the model to load.
+    Returns: 
+        HuggingFaceBgeEmbeddings: The loaded model.
     """
     try:
-        model_name = "BAAI/bge-small-en-v1.5" #sentence-transformers/all-mpnet-base-v2" #"BAAI/bge-small-en" # this is download the model from huggingface i have downloaded the model in openvino format bu it does not work
+        logging.info("Loading huggingface embedding model")
         model_kwargs = {'device': 'cpu'}
         encode_kwargs = {'mean_pooling': False,'normalize_embeddings': True, "batch_size": 4}
         hf = HuggingFaceBgeEmbeddings(
@@ -42,17 +46,37 @@ def load_hf_embedding_model() -> HuggingFaceBgeEmbeddings:
         model_kwargs=model_kwargs,
         encode_kwargs=encode_kwargs,
         #query_instruction="", #this is the query instruction because bge-m3 don't need a query instruction
+        #using a different model from bge-m3 you can use the query_instruction parameter or leave it as setted by default
         )
-        #TODO: try again to use the model in openvino format and the openvino wrapper function
-        
         return hf
     except Exception as e:
         raise ValueError("Error loading huggingface embedding model{}".format(e))
+    
+def load_ov_embedding_model(model_name_or_path: str = "BAAI/bge-large-en-v1.5") -> OpenVINOBgeEmbeddings:
+    """
+    Args:
+        model_name_or_path (str): The name of the model to load.
+    Returns: 
+        OpenVINOBgeEmbeddings: The loaded model.
+    """
+    try:
+        logging.info("Loading openvino embedding model")
+        model_kwargs = {'device': 'cpu'}
+        encode_kwargs = {'mean_pooling': False,'normalize_embeddings': True, "batch_size": 4}
+        ov = OpenVINOBgeEmbeddings( #using this method has the right value for query_instructions for bge models 
+        model_name_or_path=model_name_or_path,
+        model_kwargs=model_kwargs,
+        encode_kwargs=encode_kwargs,
+        show_progress=True,
+        )
+        return ov
+    except Exception as e:
+        raise ValueError("Error loading openvino embedding model{}".format(e))
 
 def load_reranker_model() -> OpenVINOReranker:
     """
-    Load the reranker model
-    Returns: model
+    Returns: 
+        OpenVINOReranker: the loaded model.
     """
     try:
         rerank_model_name = "../reranker/bge-reranker-v2-m3"
@@ -86,7 +110,7 @@ def load_single_document(file_path: str) -> List[Document]:
     raise ValueError(f"File does not exist '{ext}'")
 
 
-def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap )-> str:
+def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap, embedding_model, vector_store_name = vectorstore_path )-> str:
     """
     Create a vectorstore from a list of documents
 
@@ -107,10 +131,14 @@ def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap )-> str:
 
     text_splitter = TEXT_SPLITERS[spliter_name](chunk_size=chunk_size, chunk_overlap=chunk_overlap,)
     texts = text_splitter.split_documents(documents)
-    db = FAISS.from_documents(texts, load_hf_embedding_model())
-    db.save_local(vectorstore_path)
+    #start_time = time.time()    
+    #db = FAISS.from_documents(texts, load_hf_embedding_model())
+    start_time = time.time()    
+    db = FAISS.from_documents(texts, load_ov_embedding_model(embedding_model))
+    print("--- %s seconds ---" % (time.time() - start_time))
+    db.save_local(vector_store_name)
 
-    return "Vectorstore created at {}".format(vectorstore_path)
+    return "Vectorstore created at {}".format(vector_store_name)
 
 def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker, search_method, score_threshold):
     """
@@ -140,14 +168,12 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
         retriever = ContextualCompressionRetriever(base_compressor=reranker, base_retriever=retriever)
     prompt = PromptTemplate(input_variables=["QWEN_DEFAULT_RAG_PROMPT", "context", "question"], template=qwen_rag_prompt_template)
     combine_docs_chain = create_stuff_documents_chain(llm, prompt)
-
-    rag_chain = create_retrieval_chain(retriever, combine_docs_chain)
-    return rag_chain
+    return  create_retrieval_chain(retriever, combine_docs_chain)
 
 #add the update retriever method
 
 
-print(create_vectordb([pdf_path], "RecursiveCharacter", 400, 50))
+#print(create_vectordb([pdf_path], "RecursiveCharacter", 1024, 20))
 
 #fatto prove con bge-m3 con 1000 di chunk size e 50 di chunk overlap e abbasando il score_threshold a 0.2 perchè con 0.5 come prima non trovava nulla
 # ora prova ad rimettere a 400 il chunk size lasciando lo stesso score_trthershold e vedere se anche il retrive con bge-m3 si veloizza perchè per ora è troppo lento 

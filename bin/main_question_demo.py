@@ -1,9 +1,7 @@
-from vectordb import  load_reranker_model, load_ov_embedding_model
-from chatbot import  request_cancel,initialize_openvino_pipeline
-from config import vectorstore_path, ov_config
+from vectordb import load_reranker_model, load_ov_embedding_model, create_rag_chain
+from chatbot import request_cancel, initialize_openvino_pipeline
+from config import vectorstore_path, ov_config, questions
 from langchain_community.vectorstores import FAISS
-from vectordb import create_rag_chain
-#import gradio as gr
 import warnings
 warnings.filterwarnings(
     "ignore",
@@ -66,25 +64,21 @@ def main():
         score_threshold=0.6,
     )
     try:
-        #take the input from the user inside a loop to keep the chatbot running
-        while True:
-            query = input("Insert here your question (type exit to quit): ")
-            if query == "exit":
-                if output:
-                    request_cancel(ov_llm=ov_llm)
-                break
+        # Loop through each question and get the response
+        for query in questions:
+            print(f"Question: {query}")
             start = time.time()
             output = rag_chain.invoke(input={"input": query})
             print("Time taken: ", time.time() - start)
-            print(output['answer'])
-            request_cancel(ov_llm=ov_llm)
+            print("Answer:", output['answer'])
+            print("-" * 100)  # Separator between each question/answer
 
     except KeyboardInterrupt:
         print("Session ended.")
     finally:
         del vectorstore
         del reranker
-        del ov_llm
+        request_cancel(ov_llm=ov_llm)
         print("Resources released.")
 
 
