@@ -72,13 +72,13 @@ def main():
             print("Time taken: ", time.time() - start)
             print("Answer:", output['answer'])
             print("-" * 100)  # Separator between each question/answer
-
+        request_cancel(ov_llm=ov_llm)
     except KeyboardInterrupt:
         print("Session ended.")
     finally:
         del vectorstore
         del reranker
-        request_cancel(ov_llm=ov_llm)
+        del ov_llm
         print("Resources released.")
 
 
