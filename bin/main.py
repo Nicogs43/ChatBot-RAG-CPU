@@ -1,4 +1,4 @@
-from vectordb import  load_reranker_model, load_ov_embedding_model
+from vectordb import  load_reranker_model, load_ov_embedding_model, load_hf_embedding_model
 from chatbot import  request_cancel,initialize_openvino_pipeline
 from config import vectorstore_path, ov_config
 from langchain_community.vectorstores import FAISS

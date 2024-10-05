@@ -52,7 +52,7 @@ def load_hf_embedding_model(model_name: str = "BAAI/bge-small-en-v1.5") -> Huggi
     except Exception as e:
         raise ValueError("Error loading huggingface embedding model{}".format(e))
     
-def load_ov_embedding_model(model_name_or_path: str = "BAAI/bge-large-en-v1.5") -> OpenVINOBgeEmbeddings:
+def load_ov_embedding_model(model_name_or_path: str = "BAAI/bge-small-en-v1.5") -> OpenVINOBgeEmbeddings:
     """
     Args:
         model_name_or_path (str): The name of the model to load.

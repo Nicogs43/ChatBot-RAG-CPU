@@ -3,6 +3,10 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import os 
 from pathlib import Path
 import subprocess
+import logging
+import sys
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 def convert_to_int8():
     if (int8_model_dir / "openvino_model.xml").exists():
@@ -12,8 +16,8 @@ def convert_to_int8():
     export_command_base = "optimum-cli export openvino --model {} --task text-generation-with-past --weight-format int8".format(hf_model_id)
     export_command_base += " --trust-remote-code"
     export_command = export_command_base + " " + str(int8_model_dir)
-    print(export_command)
-    subprocess.run(export_command, shell=True)
+    logging.info(export_command)
+    subprocess.run(export_command)
 
 def convert_to_int4( int4_mode:str = "SYM", group_size:int = 128, ratio:float = 0.8):
     if (int4_model_dir / "openvino_model.xml").exists():
@@ -32,8 +36,8 @@ def convert_to_int4( int4_mode:str = "SYM", group_size:int = 128, ratio:float = 
     #if remote_code:
     export_command_base += " --trust-remote-code"
     export_command = export_command_base + " " + str(int4_model_dir)
-    print(export_command)
-    subprocess.run(export_command, shell=True)
+    logging.info(export_command)
+    subprocess.run(export_command)
 
 
 #insert the model that you want to download
@@ -44,13 +48,13 @@ def convert_to_int4( int4_mode:str = "SYM", group_size:int = 128, ratio:float = 
 hf_model_id = input("Insert the model id in HF (model_vendor/actual_model_id): ")
 #check if the model name is insert in the correct format (model_vendor/actual_model_id)
 if hf_model_id.count("/") != 1:
-    print("The model name must be in the format model_vendor/actual_model_id")
-    exit()
+    logging.info("The model name must be in the format model_vendor/actual_model_id")
+    sys.exit()
 #split the model_id in model_vendor and actual_model_id
 model_vendor, model_id = hf_model_id.split("/")
 local_model_path = f'./model/{model_vendor}/{model_id}'
 os.makedirs(local_model_path, exist_ok=True)
-print(f"Downloading the model {model_id} from {model_vendor}")
+logging.info(f"Downloading the model {model_id} from {model_vendor}")
 
 if model_vendor == "OpenVINO":
     tokenizer = AutoTokenizer.from_pretrained(hf_model_id)
@@ -60,35 +64,40 @@ if model_vendor == "OpenVINO":
 else:
     precision = input("The model is not already in OpenVINO IR format. please select the precision of new compressed model (int4 or int8 or no_compression) and press enter ")
     if precision not in ["int4", "int8", "no_compression"]:
-        print("The precision must be int4 or int8")
-        exit()
+        logging.info("The precision must be int4 or int8 or no_compression")
+        sys.exit()
+
     if precision == "int8":
         int8_model_dir = Path(local_model_path) / "int8"
         convert_to_int8()
-    if precision == "int4":
+    elif precision == "int4":
         int4_mode = input("Select the mode of int4 conversion (SYM or ASYM) and press enter")
         if int4_mode not in ["SYM", "ASYM"]:
-            print("The mode must be SYM or ASYM")
-            exit()
+            logging.info("The mode must be SYM or ASYM")
+            sys.exit()
         group_size = input("Select the group size and press enter")
-        if not group_size.isdigit():
-            print("The group size must be an integer")
-            exit()
+        if not group_size.isdigit() or int(group_size) < 1:
+            logging.info("The group size must be an integer or greater than 0")
+            sys.exit()
         group_size = int(group_size)
-        ratio = input("Select the ratio and press enter")
-        if not ratio.replace(".", "", 1).isdigit():
-            print("The ratio must be a float")
-            exit()
-        ratio = float(ratio)
 
+        ratio = input("Select the ratio (float between 0 and 1) and press enter: ").strip()
+        try:
+            ratio = float(ratio)
+            if not (0 < ratio <= 1):
+                raise ValueError
+        except ValueError:
+            print("The ratio must be a float between 0 and 1")
+            sys.exit()
         int4_model_dir = Path(local_model_path) / "int4"
         convert_to_int4(int4_mode, group_size, ratio)
-    if precision == "no_compression":
+
+    elif precision == "no_compression":
         export_command_base = "optimum-cli export openvino --model {} --task text-generation-with-past".format(hf_model_id)
         export_command_base += " --trust-remote-code"
         export_command = export_command_base + " " + str(local_model_path)
         print(export_command)
-        subprocess.run(export_command, shell=True)
+        subprocess.run(export_command)
 
 
     
