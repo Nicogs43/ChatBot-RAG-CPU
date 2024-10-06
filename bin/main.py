@@ -76,15 +76,8 @@ def main():
             start = time.time()
             output = rag_chain.invoke(input={"input": query})
             print("Time taken: ", time.time() - start)
-            print("Answer: ")
+            print(output['answer'])
             print("-" * 100)  # Separator between each question/answer
-            #print(type(output))
-            #print(output)
-            print(output['context'])
-            contexts = []
-            for docs in output['context']:
-                contexts.append(docs.page_content)
-            print(contexts)
             request_cancel(ov_llm=ov_llm)
 
     except KeyboardInterrupt:
