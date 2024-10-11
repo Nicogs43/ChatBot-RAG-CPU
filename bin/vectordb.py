@@ -73,13 +73,13 @@ def load_ov_embedding_model(model_name_or_path: str = "BAAI/bge-small-en-v1.5") 
     except Exception as e:
         raise ValueError("Error loading openvino embedding model{}".format(e))
 
-def load_reranker_model() -> OpenVINOReranker:
+def load_reranker_model(rerank_model_name: str = "../reranker/bge-reranker-v2-m3_quantized") -> OpenVINOReranker:
     """
     Returns: 
         OpenVINOReranker: the loaded model.
     """
     try:
-        rerank_model_name = "../reranker/bge-reranker-v2-m3"
+        #rerank_model_name = "../reranker/bge-reranker-v2-m3_quantized"
         rerank_model_kwargs = {"device": "CPU"}
         rerank_top_n = 2
 
@@ -88,7 +88,7 @@ def load_reranker_model() -> OpenVINOReranker:
         model_kwargs=rerank_model_kwargs,
         top_n=rerank_top_n,
         )
-        logging.info("Loading reranker")
+        logging.info("Loading reranker from -> {}".format(rerank_model_name))
         return reranker
     except Exception as e:
         raise ValueError("Error loading reranker{}".format(e))

@@ -50,33 +50,3 @@ try:
 except Exception as e:
     logging.error("Error saving the data: {}".format(e))
 
-
-"""
-dataset = Dataset.from_dict(dictionary)
-print(dataset)
-print(dataset.features)
-
-from ragas import evaluate
-from ragas.metrics import (
-    faithfulness,
-    answer_relevancy,
-    context_recall,
-    context_precision,
-)
-
-result = evaluate(
-    dataset=dataset, 
-    metrics=[
-        context_precision,
-        context_recall,
-        faithfulness,
-        answer_relevancy,
-    ],
-)
-
-df = result.to_pandas()
-
-df = pd.concat(result, ignore_index=True)
-df.to_csv('../data/evaluation_result.csv', index=False)
-
-"""

@@ -8,3 +8,4 @@ print(path_to_model)
 
 export_command_base = "optimum-cli export openvino --model {} --task feature-extraction".format(model_id) + " " + str(path_to_model)
 subprocess.run(export_command_base, shell=True)
+
