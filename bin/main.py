@@ -26,21 +26,7 @@ def main():
     reranker = load_reranker_model()
 
     print("Loading openvino pipeline")
-    ov_llm = initialize_openvino_pipeline(ov_config)
-    """rag_chain = bot(
-                vectorstore=vectorstore,
-                ov_llm=ov_llm,
-                vector_search_top_k=5,
-                vector_rerank_top_n=2,
-                reranker=reranker,
-                search_method="similarity_score_threshold",
-                score_threshold=0.6,
-                temperature=0.7,
-                top_p=0.9,
-                top_k=50,
-                repetition_penalty=1.1,
-                hide_full_prompt=True,
-            )"""
+    ov_llm = initialize_openvino_pipeline(ov_config, model_id = "../model/google/gemma-2-2b-it")
     pipeline_kwargs = dict(
         max_new_tokens=1024,
         temperature=0.7,
