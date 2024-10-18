@@ -21,6 +21,12 @@ Context: {context}
 <|im_start|>assistant<|im_end|>
 """
 
+gemma_rag_prompt_template = f"""
+{DEFAULT_RAG_PROMPT},""" + """<start_of_turn>user
+{input}<end_of_turn><start_of_turn>context
+{context}<end_of_turn>
+<start_of_turn>model"""
+
 vectorstore_path = "../vectorstore_ov_400_50"
 
 ov_config = {

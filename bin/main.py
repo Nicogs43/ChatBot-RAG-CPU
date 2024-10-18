@@ -1,6 +1,6 @@
 from vectordb import  load_reranker_model, load_ov_embedding_model, load_hf_embedding_model
 from chatbot import  request_cancel,initialize_openvino_pipeline
-from config import vectorstore_path, ov_config
+from config import vectorstore_path, ov_config , phi_rag_prompt_template, qwen_rag_prompt_template
 from langchain_community.vectorstores import FAISS
 from vectordb import create_rag_chain
 #import gradio as gr
@@ -26,7 +26,7 @@ def main():
     reranker = load_reranker_model()
 
     print("Loading openvino pipeline")
-    ov_llm = initialize_openvino_pipeline(ov_config, model_id = "../model/google/gemma-2-2b-it")
+    ov_llm = initialize_openvino_pipeline(ov_config, model_id = "../model/microsoft/Phi-3.5-mini-instruct/int4")
     pipeline_kwargs = dict(
         max_new_tokens=1024,
         temperature=0.7,
@@ -50,6 +50,8 @@ def main():
         reranker=reranker,
         search_method="similarity_score_threshold",
         score_threshold=0.6,
+        prompt_template=phi_rag_prompt_template,
+        default_rag_prompt="DEFAULT_RAG_PROMPT",
     )
     try:
         #take the input from the user inside a loop to keep the chatbot running

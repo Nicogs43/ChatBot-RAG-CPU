@@ -140,7 +140,7 @@ def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap, embedding_mod
 
     return "Vectorstore created at {}".format(vector_store_name)
 
-def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker, search_method, score_threshold):
+def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker, search_method, score_threshold, prompt_template, default_rag_prompt = "QWEN_DEFAULT_RAG_PROMPT"):
     """
     Create a RAG chain from a vectorstore
 
@@ -166,7 +166,7 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
     if reranker:
         reranker.top_n = vector_rerank_top_n
         retriever = ContextualCompressionRetriever(base_compressor=reranker, base_retriever=retriever)
-    prompt = PromptTemplate(input_variables=["QWEN_DEFAULT_RAG_PROMPT", "context", "question"], template=qwen_rag_prompt_template)
+    prompt = PromptTemplate(input_variables=[default_rag_prompt, "context", "question"], template=prompt_template)
     combine_docs_chain = create_stuff_documents_chain(llm, prompt)
     return  create_retrieval_chain(retriever, combine_docs_chain)
 

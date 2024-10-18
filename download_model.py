@@ -19,7 +19,7 @@ def convert_to_int8():
     logging.info(export_command)
     subprocess.run(export_command)
 
-def convert_to_int4( int4_mode:str = "SYM", group_size:int = 128, ratio:float = 0.8):
+def convert_to_int4( int4_mode:str, group_size:int = 128, ratio:float = 0.8):
     if (int4_model_dir / "openvino_model.xml").exists():
         return
     #remote_code = model_configuration.get("remote_code", False)
@@ -28,8 +28,6 @@ def convert_to_int4( int4_mode:str = "SYM", group_size:int = 128, ratio:float = 
     int4_compression_args = " --group-size {} --ratio {}".format(group_size, ratio)
     if int4_mode == "SYM":
         int4_compression_args += " --sym"
-    else:
-        int4_compression_args += " --asym"
     #if enable_awq.value:
     #   int4_compression_args += " --awq --dataset wikitext2 --num-samples 128"
     export_command_base += int4_compression_args

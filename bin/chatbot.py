@@ -38,16 +38,16 @@ def initialize_openvino_pipeline(ov_config, model_id = "../model/Qwen/Qwen2.5-0.
         raise ValueError("Error loading openvino pipeline{}".format(e))
     return ov_llm
 
-
+"""
 def bot(
         vectorstore, ov_llm, vector_search_top_k, vector_rerank_top_n, search_method, score_threshold, temperature, top_p, top_k, repetition_penalty, hide_full_prompt, reranker=None):
-    """streamer = TextIteratorStreamer( #can be change if I don't want to use a streamer iterator for example in a testing mode
+    streamer = TextIteratorStreamer( #can be change if I don't want to use a streamer iterator for example in a testing mode
         ov_llm.pipeline.tokenizer,
         timeout=60.0,
         skip_prompt=hide_full_prompt,
         skip_special_tokens=True,
         #decode_kwargs=dict(clean_up_tokenization_spaces=False), even if add this line it will not work to remove a warning
-    )"""
+    )
 
     pipeline_kwargs = dict(
         max_new_tokens=1024,
@@ -77,10 +77,8 @@ def bot(
     return rag_chain
     #response = rag_chain.invoke(input={"input": query})
     #return response
-    
+    """
 
 def request_cancel(ov_llm):
     ov_llm.pipeline.model.request.cancel()
     
-
-#TODO: prova il stopping criteria per fermare l'output se serve
