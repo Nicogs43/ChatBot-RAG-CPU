@@ -1,0 +1,445 @@
+question,answer,ground_truths
+What are the typical winds in Genoa ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What are the typical winds in Genoa ? 
+Context: French border) to Genova, then SE and S to Promontorio diPiombino and Arcipelago Toscano. 
+General Remarks
+10.1 Winds—Weather.— In the Ligurian Sea and Golfe di
+Genova, the prevailing wind is from the NW practically all
+year. However, locally along the coast, there is some variation
+due to the land configuration. In the N part of the Tyrrhenian
+
+Punta della Madonnetta, 1 mile WNW, and consists of two har-bors, Porto del Valle, and Porto Vecchio.
+13.9Winds—Weather.— Winds from the NW are often strong
+and raise a sea in the roadst ead. Winds from the NE quadrant,
+especially NNE winds, are dangerous to vessels at the quays.
+13.9Depths—Limitations.— The entrance to Porto del Valle has 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+Based on the provided context, the prevailing wind in the Ligurian Sea and Gulf of Genova is from the northwest throughout the year. However, local variations can be observed along the coast due to the land's configuration. Near Genoa, winds typically blow from the southwest to the south, while further east towards the Tuscan Islands, they shift to the southeast.",The typical winds in Genoa are in winter from N (tramontana) to NW while in summer from SE (Scirocco) and SW (Libeccio)
+What is the depth of the sea in the port of Alassio ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What is the depth of the sea in the port of Alassio ? 
+Context: No. 39070), a small port, lies at the SW end of the gulf.
+11.12Depths—Limitations.— The port consists of a yacht harbor,
+which fronts the town, and Quai  de Commerce, which fronts an
+area of salt pans, 0.3 mile SE of the town.
+11.12There is 250m of total berthing space with a depth of 5.5m
+alongside. Vessels up to 5.2m  draft can be accommodated.
+
+Cape Ceraso, 3.8 miles SE. Porto di Olbia lies at its head.
+12.17Porto di Golfo Aranci (Aranci Gulf Harbor) (41°00'N.,
+9°37'E.)  lies at the head of the gulf and is mainly used by fer-
+ries. The harbor consists of two basins, divided by moles.There is a depth of 7.7m in the S basin and depths of 5.3 to
+7.2m in the N basin. A small fishing and yacht harbor lie close 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+The depth of the sea in the port of Alassio is 5.5 meters alongside. This information is derived from the section detailing the port's limitations, which specifies a total berthing space of 250m with a depth of 5.5m alongside for vessels.",The average depth in the port of Alassio is 4m
+What is the VHF channel of the port of imperia ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What is the VHF channel of the port of imperia ? 
+Context: LAT 0.0m
+Note:  Predicted heights are in meters
+above the charted datum.Imperia—Contact  Information
+Harbormaster
+VHF VHF channels 12 and 16
+Telephone 39-0183-66061
+Facsimile 39-0183-652-224
+E-mail cpimperia@mit.gov.it
+Web site http://www.guardiacostiera.gov.it/imperia
+Berthing
+VHF VHF channels 12 and 16
+Telephone 39-0198-50688
+Facsimile 39-0198-488-075
+
+po Santa Croce, is the SE extrem ity of a wide tract of low andWeb site http://www.angopi.eu
+Pilots
+VHF VHF channels 12 and 16
+Telephone 39-0183-666-345
+E-mail pilotaimperia@alice.itImperia—Contact Information 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+According to the provided information, the VHF channels for communication at the port of Imperia are VHF 12 and VHF 16.",There are two VHF channels in the port of Imperia: 12 and 16
+Where is situated the Golfo Marconi ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Where is situated the Golfo Marconi ? 
+Context: Golfo Marconi
+10.20 Golfo Marconi (44°18'N., 9°15'E.) is entered be-
+tween Punta di Portofino and Chiavari, a town, 4.5 miles ENE.
+It extends 2.7 miles NNW to Rapallo, at the head, and is con-
+sidered to be the most picturesqu e in the Italian rivieras. The W
+side of the gulf, which has many small bays, offers good shel-
+ter from winds from the S through N. However, the NE side of 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+user
+Where is situated the Golfo Marconi?
+The Golfo Marconi is located between Punta di Portofino and Chiavari, extending towards Rapallo, offering shelter from winds coming from the north through the south. It is situated on the Italian Riviera coast.","Marconi Gulf is located between Portofino and Chiavari, along the eastern Ligurian Riviera"
+Can you tell me the email address of the port of Ischia ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Can you tell me the email address of the port of Ischia ? 
+Context: Porto d’Ischia—Contact Information
+Port
+VHF VHF channels 13 and 16
+Telephone 39-081-507-2801
+Facsimile 39-081-507-2850
+E-mailucischia@mit.gov.it
+ischia@guardiacostiera.gov.it
+
+E-mail ormeggiatori@supereva.it
+Web site http://www.angopi.eu
+Port Authority
+Telephone 39-0585-782-501
+Facsimile 39-0585-782-555
+E-mail info@autoritaportualecarrara.it
+Pilots
+VHF VHF channels 12 and 16
+Telephone 39-0585-633-115
+Facsimile 39-0585-633-321
+E-mail pilcar@tin.it 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+Based on the provided contact information, the email address for the port of Ischia is `ucischia@mit.gov.it` or `ischia@guardiacostiera.gov.it`.",Ischia Harbor Email is ischia@guardiacostiera.it
+"Can you illustrate how one should enter the port of Genoa, what instructions should I follow and what should I watch out for ?","<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Can you illustrate how one should enter the port of Genoa, what instructions should I follow and what should I watch out for ? 
+Context: passage through Canale di San Pietro. Pilots for the canal areprovided by Porto di Sant Antioco. The port can be contacted
+on VHF channel 11 or 16.
+12.47Vessels must contact the port authorities on VHF channel 16
+prior to entering or leaving the port. Departing vessels have the
+right-of-way over vessels entering the port. There is a speed
+limit of 3 knots in the harbor.
+
+308 Sector 12. Italy—Sardegna (Sardinia)    
+Pub. 131obtained from the harbormaster. 
+12.49Directions.— From the NW, large vessels are advised to
+approach the port by passing between Isola dei Meli and Secca
+Martin in depths of about 30m. Smaller vessels may pass
+between Isola Piana and Secca Gra nde in depths of about 15m,
+but currents setting NNE towards Secca Grande are sometimes
+experienced. 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+To enter the port of Genoa, vessels should approach from the northwest, with larger ships advised to pass between Isola dei Meli and Secca Martin in depths of approximately 30 meters, while smaller vessels can navigate between Isola Piana and Secca Grande at depths of around 15 meters. Prior to entering the port, vessels must communicate with the port authorities via VHF channel 16. Upon arrival, they should adhere to the 3 knots speed limit within the harbor. Maritime rules dictate that departing vessels have the right-of-way over those entering the port.",To enter the port of genoa one must have a moderate speed and be careful to use the right entrances for pleasure boats and control the movement of larger ships of all types being a very large port. If possible contact the port offices first.
+What is the intesity of the tides in the port of Ancona ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What is the intesity of the tides in the port of Ancona ? 
+Context: 18.18Caution.— Landslides may occur along the coast between
+Numana and Ancona. Prohibited areas, which may extend100m from the coast, may be  established as necessary.
+Porto di Ancona (43°37'N., 13°30'E.)
+World Port Index No. 40660
+18.19 The port of Ancona is formed by a dredged harbor
+which is protected by breakwaters. It is extensively quayed and
+
+11.5Tides—Currents.— Tides and currents at Bastia are negligi-
+ble, the water level being affected mainly by periods of strong
+winds.
+11.5Depths—Limitations.— Port Saint-Nicholas is the only har-
+bor accessible to commercial vessels. For berthing information
+see the title tabled Bastia—Berth Information .
+11.5When ships simultaneously o ccupy North Quay and North- 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+I apologize, but the provided context does not contain specific information about the intensity or characteristics of the tides in the port of Ancona. The details given pertain more to general maritime conditions and limitations for other ports. Therefore, I am unsure about the exact tide intensity in the port of Ancona based on this information.",Tides in the port of Ancona are generally negligible by only 0.5 m and up to a maximum of 0.9 when the strong N wind (bora) blows.
+What are the main dangers in the port of Naples ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What are the main dangers in the port of Naples ? 
+Context:  
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+user
+The main dangers in the port of Naples include strong tidal currents, navigational hazards such as wrecks and submerged rocks, and the risk of ship collisions due to its strategic position. These factors require meticulous navigation and adherence to safety protocols by mariners.",The main dangers in the Port Of Naples are the many fast sailing tourist ferries.
+What winds are sheltered from in the harbor of Otranto ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What winds are sheltered from in the harbor of Otranto ? 
+Context: 15.15Winds—Weather.— The harbor is sheltered from N and W
+winds. At times, strong SW squalls descend from the moun-tains, but these do not raise heavy seas in the harbor. The har-
+bor is open to the E and is sometimes unsafe during strong SE
+and E winds.
+15.15Tides—Currents.— Currents in this vicinity usually set W
+
+between Punta San Nicola, located 2.5 miles NW of Capod’Otranto, and Punta Craul (La Punta), 0.5 mile NW. A break-
+water extends NW from Punta Sa n Nicola and encloses the SE
+part of the bay. The town of Otranto stands on the SW side ofthe bay.
+17.4Winds—Weather.— The harbor is prot ected from all winds
+except those from the N. The bo ra, a strong and dry NE to N 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+user
+Based on the provided context, the harbor of Otranto is sheltered from all winds except those coming from the North. It mentions that the town of Otranto stands on the southwest side of the bay, which is protected by a seawall extending northwest from Punta San Nicola. The area is open to the east and can be unsafe during strong southeast and east winds.",To all except N winds that can be very violent especially in winter.
+Is it possible to land on the island of Pianosa in the Tremiti Islands?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Is it possible to land on the island of Pianosa in the Tremiti Islands? 
+Context:  
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+The island of Pianosa is part of the Archipelago di Capo Passero and is not accessible for landing due to its strategic importance and security measures. It is not open to public visits or landings.",No because it is a marine protected area. One must keep a distance of 500 m from its coastline.
+What are the prominent landmarks to identify Capo Mele from the sea?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What are the prominent landmarks to identify Capo Mele from the sea? 
+Context: fronted by above-water rocks. A large church, with a bell tower
+and a two-story building attached  to its E side, dominates this
+part of the coast. A smaller chur ch, with a pointed bell tower, is
+situated nearer to the cape.
+15.23Secca del Capo, an isolated shoal, lies about 3.2 miles NE of
+Capo Faro. This shoal has a depth of 8m and fishing boats are
+often found in its vicinity. 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+user
+What are the prominent landmarks to identify Capo Mele from the sea?
+Based on the provided context, the prominent landmarks to identify Capo Mele from the sea include the large church with a bell tower dominating the coastal area, and the smaller church with a pointed bell tower situated closer to the cape. These features, combined with the above-water rocks mentioned, would help navigators locate Capo Mele accurately.","A light is shown from a prominent tower with a dwelling, 25 meters high, standing on the cape. A signal station surmounts the summit of the cape."
+Where can I anchor near the port of San remo ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Where can I anchor near the port of San remo ? 
+Context: ters. Vessels may only anchor in one of the six designated an-chorage areas after obtaining permission from the
+harbormaster at Trapani. Pilotage is available and local knowl-
+edge is recommended when entering the port.
+14.2Punta San Leonardo (36°50'N., 11°55'E.), a low point, is
+located at the NW end of the is land, close E of Pantellaria. A
+
+Sector 10. Italy—West Coast—Ruisseau Saint-Lo uis to Promontorio di Piombino    247
+Pub. 13110.31Anchorage.— Anchorage can be taken in the harbor under
+the directions of the pilot. Ve ssels can anchor, in 6 to 12m,
+thick mud, good holding ground. The surrounding mountainsand the long detached breakwate r give the roadstead excellent
+protection from the sea and weather. 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+Based on the provided context, vessels can anchor near the port of San Remo in one of the six designated anchorage areas after obtaining permission from the harbormaster at Trapani. However, the context does not specify a particular anchorage area near San Remo. It mentions an anchorage sector in Italy's west coast, which could be near San Remo, but this sector has better protection from the sea and weather with thick mud and good holding ground, located at Punta San Leonardo. For precise information, it would be best to consult the harbormaster at Trapani.","Vessels can anchor, in a depth of 12 meters, sand, close east of the harbor entrance. The holding ground is good, but anchorage is not advisable with strong south (S) winds."
+Please can you describe the port of Carloforte ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Please can you describe the port of Carloforte ? 
+Context: and are conspicuous from seaward.
+12.47 Carloforte (39°08'N., 8°19'E.) (World Port Index No.
+39250), a small harbor, lies on th e E side of Isola di San Pietra
+and fronts the only town on the island. It is sheltered by two
+breakwaters and mostly used by ferries and fishing boats.
+12.47All winds cause surf in the har bor, especially winds from the 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+Can you provide information about the port of Carloforte including its location and the types of vessels it typically accommodates?
+arbonate
+Carloforte is a small harbor located on the eastern side of Isola di San Pietra, offering sheltered conditions with the aid of two breakwaters. The port is primarily used for ferry and fishing boats due to its limited size and configuration.",Carloforte has a small harbor protected by two breakwaters. One almost perpendicular to the other forming a narrow entrance.
+Is there a VHF channel to contact for information about the passage of the Strait of Messina ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Is there a VHF channel to contact for information about the passage of the Strait of Messina ? 
+Context: 13.75Caution.— Submarine cables, which extend across the Stret-
+to di Messina, are landed on th e coast, 0.5 mile SW of BagnaraTugs
+VHF VHF channels 9 and 16
+Telephone 39-0966-714-241
+Facsimile 39-0966-714-240
+E-mail contugsrl@contug.it
+Web site http://www.scafi.it/contug.html
+Maritime Advisory Service
+VHF VHF channels 11 and 16
+Telephone 39-0966-51208
+Facsimile 39-0966-51208
+
+val vessels.
+15.44Anchoring, fishing, and underwater activities are prohibited
+in the approaches to and within the port. 
+Messina—Contact  Information
+Harbormaster
+Call sign Messina Harbormaster
+VHF VHF channels 14 and 16Telephone39-090-45830
+39-090-344-444 (Operator)
+Facsimile39-090-59350
+39-090-573-0832
+E-mailcpmessina@mit.gov.it
+so.cpmessina@mit.gov.it 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+The context provided does not specifically mention a VHF channel for information about the passage of the Strait of Messina. However, it does list VHF channels 14 and 16 for the Messina Harbor Master, which could be used for general harbor-related information including navigation through the Strait. For specific passage instructions, one might need to contact these channels directly.","The VHF channels are 10, 13, 14, and 16."
+To what winds is the port of Trapani exposed ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: To what winds is the port of Trapani exposed ? 
+Context: 14.18Isolotto Asinelli (38°04'N., 12°32'E.), a low and black rock,
+lies 1.5 miles W of Punta Pizzolungo. A light is shown from astructure, 6m high, standing on this rock.
+14.19 Trapani (38°01'N., 12°30'E.) (World Port Index No.
+40150), a harbor protected by br eakwaters, is the principal port
+on the W coast of Sicilia.
+14.19Winds—Weather.— The harbor is exposed to all winds and
+
+of the heights behind it. The port fronts the city and is protect-
+ed by breakwaters.
+13.46Winds—Weather.— Winds from the N (the Tramonta),
+which blow down from the mountains in violent squalls, can
+put a strain on the moorings of vessels. Winds from the S andSSW cause a surf, impose a hea vy strain on moorings, and can
+make entry difficult. 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+TriState Port of Trapani is exposed to all winds, but the north (Tramonto) winds, coming from the mountainous regions, pose a significant risk due to their forceful nature and potential strain on moorings. However, south and southwest winds bring waves and exert heavy stress on anchors, complicating entry into the harbor.","The harbor is exposed to all winds and is open to the W. In the spring, strong seasonal SE winds can make entry hazardous"
+What is the marrobbio phenomenon ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What is the marrobbio phenomenon ? 
+Context:  
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+user
+I couldn't find any information on ""marrobbio phenomenon"" specifically related to ports or sailing activities in Italy. It seems this term might be specific to another context or could be misspelled. I am unsure.","Marrobbio is a rare meteorological phenomenon observed in the Mediterranean, particularly along the southern west (SW) coast of Sicily. It involves sudden and significant oscillations in sea level, similar to a small tsunami, caused by atmospheric pressure changes and wind patterns. These rapid changes can lead to temporary flooding in coastal areas."
+What is the maximum vessel size that can be accommodated at the port of San Remo?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What is the maximum vessel size that can be accommodated at the port of San Remo? 
+Context: WSW winds, it may be co nsiderably increased.
+13.34Depths—Limitations.— The maximum draft for vessels en-
+tering the harbor is 8.35m. This limit may be increased to
+8.65m at high tide. The main commercial facilities include Mo-lo di Levante, 247m long, with depths of 8.3 to 9m alongside;
+and Banchina Crocelle, 300m long, with depths of 6 to 7m
+
+to 6.5m alongside. Vessels up to 140m in length or with a max-imum draft of 5.2m can be ac commodated. Ther e are facilities
+for small craft and yachts. For more berthing information see
+the table titled Marsala—Berth Information .
+14.21Aspect.— Prominent landmarks in the town include the gray
+dome of the cathedral and a 14-story building standing close 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+The maximum vessel size that can be accommodated at the port of San Remo is up to 140 meters in length or with a maximum draft of 5.2 meters. At high tide, this limit can be increased to 8.65 meters.",Vessels up to 100 meters in length and with a draft of 4.3 meters can be accommodated at the port of San Remo.
+What are the navigational hazards near the island of Giglio in the Tuscan Archipelago?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What are the navigational hazards near the island of Giglio in the Tuscan Archipelago? 
+Context:  
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+I'm unsure if there's specific navigational hazard information provided regarding the island of Giglio in the Tuscan Archipelago from the given context. The context does not provide details about navigational hazards.",A restricted area lies 4 miles W of Isola Giglio. Mariners should consult local authorities before entering the area.
+What are the possible dangers in entering the port of Civitavecchia at night ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What are the possible dangers in entering the port of Civitavecchia at night ? 
+Context: 13.12Caution.— Care should be exercised when entering the har-
+bor at night as the navigation lights are not easily distinguished
+from the lights of the town.
+13.12Major developments are underway within the port. For de-
+tails regarding the latest information and changes in depths,
+contact the Port Authority. 
+Civitavecchia to Fiumicino
+13.13 Capo Linaro (42°02'N., 11°50'E.) is low and barren. 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+Entering the port of Civitavecchia at night presents a risk due to the difficulty in distinguishing the navigation lights from the town lights. Mariners must exercise caution to avoid collisions with structures like Capo Linaro, which is low and barren. It's also important to note that there have been recent developments within the port that require checking with the Port Authority for the latest information on depths.",Care should be exercised when entering the harbor at night as the navigation lights are not easily distinguished from the lights of the town.
+Can you describe to me the typical winds that affect the port of Trieste in winter ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Can you describe to me the typical winds that affect the port of Trieste in winter ? 
+Context: Mare Grande. Winds from the SE , especially in winter, are
+strong and may disturb cargo handling by vessels berthed inPorto Mercantile. These winds us ually also bring mist and rain,
+especially during May and June. In spring, strong W gusts of
+wind blow over the roadstead. Th ey are generally of a brief du-
+ration and slacken towa rds sunset. Winds from the E and S usu-
+ally bring fog.
+
+Gusts from the N, which may blow suddenly in winter, are, al-though rare, violent and dangerous for vessels in the harbor.
+The Garigliano (wind from the NE to ENE) makes berthing
+and unberthing difficult, particularly during the winter. Strongwinds from SE to SSW create a st rong surf along the coast, es-
+pecially at Gaeta-Porto Salvo.
+13.22Depths—Limitations.— The approach to the roadstead is 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+user
+Can you describe to me the typical winds that affect the port of Trieste in winter?
+<tool_call>ecastillo
+In winter, the typical winds affecting the port of Trieste come from the southeast (SE), bringing strong and sometimes disruptive conditions for cargo handling in Porto Mercantile. These winds often coincide with mist and rain, particularly in May and June.","From September to March, winds alternate usually between the NW and NE. The NE winds blow sometimes with such force as to cause a sea in Mare Piccolo. Winds from the SW raise a lively sea and cause high water in Mare Grande. Winds from the SE, especially in winter, are strong and may disturb cargo handling by vessels berthed in Porto Mercantile."
+What currents are there in the port of Chioggia ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What currents are there in the port of Chioggia ? 
+Context:  
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+I'm unsure if the specific details about currents in the port of Chioggia are widely documented, but generally, ports like Chioggia can experience ebb and flow currents influenced by the nearby Adriatic Sea's tides and the influence of the Gulf Stream. However, for precise information, one would need to consult local marine navigation charts or hydrographic reports.","Currents are strong and are mostly influenced by rain, run-off, and winds. With strong winds from the NE and SE, the current between the breakwaters can attain a rate up to 4 knots."
+What is the draught depth in the port of Rimini ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What is the draught depth in the port of Rimini ? 
+Context: Rimini, a resort, stands on the SE bank of the river at the foot
+of some wooded hills.
+18.25The harbor has depths of 2.9 to 3.7m and is subject to silting.
+It may be contacted on VHF channel 11 or 16 and is used
+mostly by small craft,  pleasure craft, small ferries, and yachts.
+Vessels with a maximum draft of 3.2m can be accommodated.Fano—Contact Information  
+Port
+Call sign Fano Port Radio 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+user
+What is the draught depth in the port of Rimini?
+According to the provided context, the draught depth for vessels accommodated in the port of Rimini is up to 3.2 meters.",The harbor has depths of 2.9 to 3.7m and is subject to silting.
+Is the roadstead in Portoferraio Bay safe for anchorage?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: Is the roadstead in Portoferraio Bay safe for anchorage? 
+Context: town. The depths in this area are reported to be shallower be-
+cause of silt from the nearby river.
+16.5Soverato Marina provides one of the safest anchorages along
+this coast. Vessels can anchor, in a depth of 29m, sand, about
+0.1 mile offshore and ENE of the church. Local knowledge is
+advisable. This roadstead is pa rtially protected by a sandspit 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+user
+Is the roadstead in Portoferraio Bay safe for anchorage based on the given information?
+
+Based on the provided context, the roadstead at Soverato Marina, which is one of the safest anchorages along the coast near Portoferraio Bay, is suitable for anchoring. It offers a depth of approximately 29 meters in sandy conditions, about 0.1 miles east-northeast of the church. However, local knowledge is still advised due to potential shallower areas caused by silt from nearby rivers.","Roadstead of Portoferraio affords anchorage to vessels of all sizes, but the bottom, being of soft mud, is not a good holding ground. With SE winds, which prevail in the area, vessels are liable to drag anchor, even when riding to two anchors. It is important to stay clear of the ferry turning areas and the harbor approaches. While ferry wash can sometimes cause some movement, it does not pose a significant danger for anchored vessels."
+What prohibitions exist in the Portofino Marine Nature Reserve ?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: What prohibitions exist in the Portofino Marine Nature Reserve ? 
+Context: and should be given a wide berth. 
+10.29A circular prohibited area is lo cated in the Seno di Fossola as
+shown on the chart.
+10.29A Marine Nature Reserve extends from Capo dell’ Isola to
+Punta San Pietro. The reserve in cludes sea areas off Isola del
+Tinto and the W coast of Isola Palmaria. Restrictions and pro-
+hibitions are in force in the re serve area. Mariners should con-
+
+fishing prohibited area lies in Golfo Spurlatta and may best be
+seen on the chart. 
+12.20A prohibited area, marked by lighted beacons, surrounds Iso-
+la Molarotto and may best be seen on the chart. 
+12.20A marine nature reserve, as seen on the chart, has been estab-
+lished in the vicinity of Isola Tavolara. Vessels over 500 gt
+transporting goods or passengers are prohibited from navigat- 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+The Portofino Marine Nature Reserve prohibits fishing within its boundaries, which extend from Capo dell'Isola to Punta San Pietro, including areas around Isola del Tinto and the western coast of Isola Palmaria. Additionally, there are specific restricted zones such as the Golfo Spurlatta and around Isola Molarotto, which also feature prohibitions for certain vessels.","In the Portofino Marine Nature reserve it is forbidden to anchor, fish and even enter unless authorised."
+On which side of the port of La Spezia is the naval base located?,"<|im_start|>system
+You are a knowledgeable assistant specializing in answering questions about ports, sailing, and maritime activities along the Italian peninsula. Use the most relevant pieces of the retrieved context below to support your answer. If you don't know the answer or the context is insufficient, state that you are unsure. Use a maximum of three sentences, and keep your answer concise, accurate, and where applicable, use maritime terminology.<|im_end|>
+<|im_start|>user
+Question: On which side of the port of La Spezia is the naval base located? 
+Context: Sector 10. Italy—West Coast—Ruisseau Saint-Lo uis to Promontorio di Piombino    243
+Pub. 131zia, is protected by Diga Foran ea, a detached breakwater, and
+forms the extensive harbor of La Spezia. The port has commer-
+cial facilities, but is also a main naval base with a large naval
+shipyard situated in its NW part.
+10.31Tides—Currents.— Tides are almost negligible. See the ta- 
+<|im_end|>
+<|im_start|>assistant<|im_end|>
+<tool_call>user
+The naval base is located in the northwest (NW) part of the port of La Spezia.",The naval base is situated in the NW part of the harbor.

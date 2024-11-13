@@ -48,3 +48,36 @@ questions = [
     "Can you tell me the email address of the port of Ischia?",
     "Can you illustrate how one should enter the port of Genoa, what instructions should I follow and what should I watch out for?"
 ]
+
+model_dict = {
+    "gemma": {
+        "model_path": "../model/google/gemma-2-2b-it",
+        "prompt_template": gemma_rag_prompt_template,
+        "default_rag_prompt": DEFAULT_RAG_PROMPT
+    },
+    "phi_int4": {
+        "model_path": "../model/microsoft/Phi-3.5-mini-instruct/int4",
+        "prompt_template": phi_rag_prompt_template,
+        "default_rag_prompt": DEFAULT_RAG_PROMPT
+    },
+    "phi_int8": {
+        "model_path": "../model/microsoft/Phi-3.5-mini-instruct/int8",
+        "prompt_template": phi_rag_prompt_template,
+        "default_rag_prompt": DEFAULT_RAG_PROMPT
+    },
+    "qwen_0.5b": {
+        "model_path": "../model/Qwen/Qwen2.5-0.5B-Instruct",
+        "prompt_template": qwen_rag_prompt_template,
+        "default_rag_prompt": QWEN_DEFAULT_RAG_PROMPT
+    },
+    "qwen_1.5b": {
+        "model_path": "../model/Qwen/Qwen2.5-1.5B-Instruct",
+        "prompt_template": qwen_rag_prompt_template,
+        "default_rag_prompt": QWEN_DEFAULT_RAG_PROMPT
+    },
+    "qwen_3b": {
+        "model_path": "../model/Qwen/Qwen2.5-3B-Instruct/int8",
+        "prompt_template": qwen_rag_prompt_template,
+        "default_rag_prompt": QWEN_DEFAULT_RAG_PROMPT
+    }
+}

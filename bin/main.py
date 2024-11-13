@@ -3,8 +3,8 @@ from chatbot import  request_cancel,initialize_openvino_pipeline
 from config import vectorstore_path, ov_config , phi_rag_prompt_template, qwen_rag_prompt_template
 from langchain_community.vectorstores import FAISS
 from vectordb import create_rag_chain
-#import gradio as gr
 import warnings
+
 warnings.filterwarnings(
     "ignore",
     message="`clean_up_tokenization_spaces` was not set",
@@ -16,6 +16,7 @@ import time
 def main():
     print("Loading vectorstore")
     print(vectorstore_path)
+    
     output = None
     try:
         vectorstore = FAISS.load_local(vectorstore_path, embeddings=load_ov_embedding_model(), allow_dangerous_deserialization=True)

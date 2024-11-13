@@ -1,9 +1,10 @@
 import pandas as pd 
 from vectordb import load_reranker_model, load_ov_embedding_model, create_rag_chain
 from chatbot import request_cancel, initialize_openvino_pipeline
-from config import vectorstore_path, ov_config
+from config import vectorstore_path, ov_config, phi_rag_prompt_template, model_dict
 from langchain_community.vectorstores import FAISS
 import warnings
+
 warnings.filterwarnings(
     "ignore",
     message="`clean_up_tokenization_spaces` was not set",
@@ -18,18 +19,26 @@ try:
 except FileNotFoundError:
     raise ValueError("Error loading data")
 
-
 # Load the vector store
 try:
     vectorstore = FAISS.load_local(vectorstore_path, embeddings=load_ov_embedding_model(), allow_dangerous_deserialization=True)
 except Exception as e:
     raise ValueError("Error loading vectorstore{}".format(e))
 
-logging.info("Loading reranker")
-reranker = load_reranker_model()
+try:
+    logging.info("Loading reranker")
+    reranker = load_reranker_model()
+except Exception as e:
+    logging.error(f"Error loading reranker model: {e}")
+    raise ValueError("Error loading reranker model")
+
+if not vectorstore or not reranker:
+    raise ValueError("Error loading vectorstore or reranker model")
+
 
 logging.info("Loading openvino pipeline")
-ov_llm = initialize_openvino_pipeline(ov_config)
+
+ov_llm = initialize_openvino_pipeline(ov_config,model_id="../model/microsoft/Phi-3.5-mini-instruct/int4")
 pipeline_kwargs = dict(
         max_new_tokens=1024,
         temperature=0.7,
@@ -53,7 +62,10 @@ rag_chain = create_rag_chain(
         reranker=reranker,
         search_method="similarity_score_threshold",
         score_threshold=0.6,
+        prompt_template=phi_rag_prompt_template,
+        default_rag_prompt="DEFAULT_RAG_PROMPT",
 )
+
 
 answers = []
 
