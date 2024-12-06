@@ -8,10 +8,7 @@ from config import model_dict
 def proc_datacreated_by_qwen():
     filtered_dict = {k: v for k, v in model_dict.items() if k.startswith('q')}
     for model_name, model_details in model_dict.items():
-        # TODO: load the data from each file and create a single dataset (maybe not in csv format)
-
         df = pd.read_csv(f"../data/{model_name}_data_with_answer.csv")
-
         # Initialize lists to store the cleaned answers and contexts
         cleaned_answers = []
         contexts = []

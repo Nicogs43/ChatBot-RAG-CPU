@@ -37,7 +37,7 @@ for model_name, model_details in model_dict.items():
     
     start_time_initialization = time.time()
     # Load model-specific pipeline
-    ov_llm = initialize_openvino_pipeline(ov_config, model_id=model_details["model_path"])
+    ov_slm = initialize_openvino_pipeline(ov_config, model_id=model_details["model_path"])
     
     # Set pipeline configurations
     pipeline_kwargs = dict(
@@ -47,18 +47,15 @@ for model_name, model_details in model_dict.items():
         top_p=0.9,
         top_k=50,
         repetition_penalty=1.1,
-        tokenizer=ov_llm.pipeline.tokenizer,
-        return_full_text=False,
-        hide_full_prompt=True,
+        tokenizer=ov_slm.pipeline.tokenizer,
         skip_special_tokens=True,
-        skip_prompt=True,
     )
-    ov_llm.pipeline_kwargs = pipeline_kwargs
+    ov_slm.pipeline_kwargs = pipeline_kwargs
     
     # Create the RAG chain with model-specific configurations
     rag_chain = create_rag_chain(
-        db=vectorstore,
-        llm=ov_llm,
+        vector_index=vectorstore,
+        slm=ov_slm,
         vector_search_top_k=5,
         vector_rerank_top_n=2,
         reranker=reranker,
@@ -81,20 +78,19 @@ for model_name, model_details in model_dict.items():
             end_time_inference = time.time()
             time_inference_list.append(end_time_inference - start_time_inference)
             time.sleep(1)  # Pause to prevent overloading
-        request_cancel(ov_llm=ov_llm)
+        request_cancel(ov_slm=ov_slm)
     except KeyboardInterrupt as e:
         logging.info(e)
     finally:
-        del ov_llm
+        del ov_slm
         logging.info(f"Session ended for model {model_name}.")
 
-    time_inference_list = pd.DataFrame(time_inference_list)
-    time_inference_list.to_csv(f"../data/inference_time/{model_name}_time_inference.csv", index=False)
+    time_inference_list = pd.DataFrame(time_inference_list, columns=['inference_time'])
+    time_inference_list.to_csv(f"../data/inference_time/{model_name}_time_inference_new.csv", index=False)
     print(f"Data saved successfully for model: {model_name}")
     
 
-# Save the initialization time for each model
-save_time_init = pd.DataFrame.from_dict(time_init_dict, "index", columns=["Initialization Time"])
+save_time_init = pd.DataFrame.from_dict(time_init_dict, "index", columns=["initialization_time"])
 save_time_init.to_csv("../data/inference_time/time_initialization.csv", index=False)
 # Clean up resources after all models have been tested
 del vectorstore

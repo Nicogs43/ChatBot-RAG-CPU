@@ -35,7 +35,7 @@ for model_name, model_details in model_dict.items():
     logging.info(f"Testing model: {model_name}")
     
     # Load model-specific pipeline
-    ov_llm = initialize_openvino_pipeline(ov_config, model_id=model_details["model_path"])
+    ov_slm = initialize_openvino_pipeline(ov_config, model_id=model_details["model_path"])
     
     # Set pipeline configurations
     pipeline_kwargs = dict(
@@ -45,18 +45,15 @@ for model_name, model_details in model_dict.items():
         top_p=0.9,
         top_k=50,
         repetition_penalty=1.1,
-        tokenizer=ov_llm.pipeline.tokenizer,
-        return_full_text=False,
-        hide_full_prompt=True,
+        tokenizer=ov_slm.pipeline.tokenizer,
         skip_special_tokens=True,
-        skip_prompt=True,
     )
-    ov_llm.pipeline_kwargs = pipeline_kwargs
+    ov_slm.pipeline_kwargs = pipeline_kwargs
     
     # Create the RAG chain with model-specific configurations
     rag_chain = create_rag_chain(
-        db=vectorstore,
-        llm=ov_llm,
+        vector_index=vectorstore,
+        slm=ov_slm,
         vector_search_top_k=5,
         vector_rerank_top_n=2,
         reranker=reranker,
@@ -73,11 +70,11 @@ for model_name, model_details in model_dict.items():
             output = rag_chain.invoke(input={"input": question})
             answers.append(output['answer'])
             time.sleep(1)  # Pause to prevent overloading
-        request_cancel(ov_llm=ov_llm)
+        request_cancel(ov_slm=ov_slm)
     except KeyboardInterrupt as e:
         logging.info(e)
     finally:
-        del ov_llm
+        del ov_slm
         logging.info(f"Session ended for model {model_name}.")
 
     # Save results for this model

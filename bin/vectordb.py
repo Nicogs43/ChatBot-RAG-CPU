@@ -28,8 +28,6 @@ TEXT_SPLITERS = {
 
 LOADERS = {".pdf": (PyPDFLoader, {})}  # can be also used PyPDFium2  for pdf loading seems more faster
 
-
-#provare ad usare huggingfacebgeembeddings e poi provare ad inserire con bge-small-en-v1.5 il parametro query_instruction
 def load_hf_embedding_model(model_name: str = "BAAI/bge-small-en-v1.5") -> HuggingFaceBgeEmbeddings:
     """
     Args:
@@ -75,11 +73,12 @@ def load_ov_embedding_model(model_name_or_path: str = "BAAI/bge-small-en-v1.5") 
 
 def load_reranker_model(rerank_model_name: str = "../reranker/bge-reranker-v2-m3_quantized") -> OpenVINOReranker:
     """
+    Args:
+        rerank_model_name (str): The name of the model to load.
     Returns: 
         OpenVINOReranker: the loaded model.
     """
     try:
-        #rerank_model_name = "../reranker/bge-reranker-v2-m3_quantized"
         rerank_model_kwargs = {"device": "CPU"}
         rerank_top_n = 2
 
@@ -131,16 +130,14 @@ def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap, embedding_mod
 
     text_splitter = TEXT_SPLITERS[spliter_name](chunk_size=chunk_size, chunk_overlap=chunk_overlap,)
     texts = text_splitter.split_documents(documents)
-    #start_time = time.time()    
-    #db = FAISS.from_documents(texts, load_hf_embedding_model())
     start_time = time.time()    
-    db = FAISS.from_documents(texts, load_ov_embedding_model(embedding_model))
+    vector_index = FAISS.from_documents(texts, load_ov_embedding_model(embedding_model))
     print("--- %s seconds ---" % (time.time() - start_time))
-    db.save_local(vector_store_name)
+    vector_index.save_local(vector_store_name)
 
     return "Vectorstore created at {}".format(vector_store_name)
 
-def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker, search_method, score_threshold, prompt_template, default_rag_prompt = "QWEN_DEFAULT_RAG_PROMPT"):
+def create_rag_chain(vector_index, slm, vector_search_top_k, vector_rerank_top_n, reranker, search_method, score_threshold, prompt_template, default_rag_prompt = "QWEN_DEFAULT_RAG_PROMPT"):
     """
     Create a RAG chain from a vectorstore
 
@@ -162,19 +159,10 @@ def create_rag_chain(db, llm, vector_search_top_k, vector_rerank_top_n, reranker
         search_kwargs = {"k": vector_search_top_k, "score_threshold": score_threshold}
     else:
         search_kwargs = {"k": vector_search_top_k}
-    retriever = db.as_retriever(search_kwargs=search_kwargs, search_type=search_method)
+    retriever = vector_index.as_retriever(search_kwargs=search_kwargs, search_type=search_method)
     if reranker:
         reranker.top_n = vector_rerank_top_n
         retriever = ContextualCompressionRetriever(base_compressor=reranker, base_retriever=retriever)
     prompt = PromptTemplate(input_variables=[default_rag_prompt, "context", "question"], template=prompt_template)
-    combine_docs_chain = create_stuff_documents_chain(llm, prompt)
+    combine_docs_chain = create_stuff_documents_chain(slm, prompt)
     return  create_retrieval_chain(retriever, combine_docs_chain)
-
-#add the update retriever method
-
-
-#print(create_vectordb([pdf_path], "RecursiveCharacter", 1024, 20))
-
-#fatto prove con bge-m3 con 1000 di chunk size e 50 di chunk overlap e abbasando il score_threshold a 0.2 perchè con 0.5 come prima non trovava nulla
-# ora prova ad rimettere a 400 il chunk size lasciando lo stesso score_trthershold e vedere se anche il retrive con bge-m3 si veloizza perchè per ora è troppo lento 
-#  troppo lento il vector db con bge-m3 con 400 di chunk size e 50 di chunk overlap e score_threshold a 0.2 anche perchè è multi-lingua ma non ci interessa

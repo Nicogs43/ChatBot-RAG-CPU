@@ -98,8 +98,3 @@ if __name__ == "__main__":
             subprocess.run(export_command)
 
     logging.info(f"Model {model_id} downloaded in {local_model_path}")
-    
-        
-
-    #TODO: re-download the model using trust_remote_code = True in from_pretrained function as suggested in HF documentation
-    #TODO: Aggiustare lo script migliorarlo (provare a tolgiere il comando optium-cli e usare le librerie di OpenVINO)

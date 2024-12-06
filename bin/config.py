@@ -39,16 +39,6 @@ ov_config = {
 
 pdf_path = "../samples/Ports_chapters_10_to_20.pdf"
 
-# List of predefined questions
-questions = [
-    "What are the typical winds in Genoa?",
-    "What is the depth of the sea in the port of Alassio?",
-    "What is the VHF channel of the port of Imperia?",
-    "Where is situated the Golfo Marconi?",
-    "Can you tell me the email address of the port of Ischia?",
-    "Can you illustrate how one should enter the port of Genoa, what instructions should I follow and what should I watch out for?"
-]
-
 model_dict = {
     "gemma": {
         "model_path": "../model/google/gemma-2-2b-it",

@@ -27,7 +27,7 @@ def main():
     reranker = load_reranker_model()
 
     print("Loading openvino pipeline")
-    ov_llm = initialize_openvino_pipeline(ov_config, model_id = "../model/microsoft/Phi-3.5-mini-instruct/int4")
+    ov_slm = initialize_openvino_pipeline(ov_config, model_id = "../model/microsoft/Phi-3.5-mini-instruct/int4")
     pipeline_kwargs = dict(
         max_new_tokens=1024,
         temperature=0.7,
@@ -35,17 +35,13 @@ def main():
         top_p=0.9,
         top_k=50,
         repetition_penalty=1.1,
-        tokenizer=ov_llm.pipeline.tokenizer,
-        return_full_text=False,
-        hide_full_prompt=True,
+        tokenizer=ov_slm.pipeline.tokenizer,
         skip_special_tokens=True,
-        skip_prompt=True,
-        #streamer=streamer,
     )
-    ov_llm.pipeline_kwargs = pipeline_kwargs
+    ov_slm.pipeline_kwargs = pipeline_kwargs
     rag_chain = create_rag_chain(
-        db=vectorstore,
-        llm=ov_llm,
+        vector_index=vectorstore,
+        slm=ov_slm,
         vector_search_top_k=5,
         vector_rerank_top_n=2,
         reranker=reranker,
@@ -60,21 +56,21 @@ def main():
             query = input("Insert here your question (type exit to quit): ")
             if query == "exit":
                 if output:
-                    request_cancel(ov_llm=ov_llm)
+                    request_cancel(ov_slm=ov_slm)
                 break
             start = time.time()
             output = rag_chain.invoke(input={"input": query})
             print("Time taken: ", time.time() - start)
             print(output['answer'])
             print("-" * 100)  # Separator between each question/answer
-            request_cancel(ov_llm=ov_llm)
+            request_cancel(ov_slm=ov_slm)
 
     except KeyboardInterrupt:
         print("Session ended.")
     finally:
         del vectorstore
         del reranker
-        del ov_llm
+        del ov_slm
         print("Resources released.")
 
 

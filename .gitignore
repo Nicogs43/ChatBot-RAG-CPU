@@ -167,7 +167,6 @@ Scripts/
 share/
 include/
 samples/
-/bin/main_gradio.py
 *vectorstore*/
 
 
