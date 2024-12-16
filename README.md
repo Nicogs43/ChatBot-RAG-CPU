@@ -11,5 +11,7 @@ pip install -r requirements.txt ```
 
 To simple run the code you have to download the embedding model, reranker model if you want and a SLM.
 
-Once download all the models you can see the code working using ``` python .\bin\main.py ```
+Then create the vector index for the R.A.G part running the ```python .\bin\create_vectordb.py ``` you can adjust the parameters as you wnat by command.
+
+Once download all the models and create the vector index you can see the code working using ``` python .\bin\main.py ```
 
