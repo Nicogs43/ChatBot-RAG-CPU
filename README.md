@@ -18,9 +18,9 @@ pip install -r requirements.txt
 ```
 ### 2. Download Required Models
 To run the code, you need to download:
-- An embedding model
-- (Optional) A reranker model
-- A Small Language Model (SLM)
+- An embedding model ```python .\download_embedding_model.py ```
+- (Optional) A reranker model  ```python .\download_reranker_model.py ```
+- A Small Language Model (SLM)  ```python .\download_model.py ```
 
 ### 3. Create the Vector Index for R.A.G.
 Generate the vector index required for the R.A.G. part by running:
