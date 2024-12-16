@@ -1,4 +1,4 @@
-# Navigating the Seas of AI Deploying Small Language Models on Compact Edge computer for Maritime Applications
+# Navigating the Seas of AI Deploying Small Language Models on Compact Edge computer for Maritime Applications 🌊⛵
 
 This repo contains the code implemented to create a Chat-bot based on a Small Language Model and integrate with R.A.G, optimized to run on a Intel CPU utilizing OpenVINO toolkit.
 
