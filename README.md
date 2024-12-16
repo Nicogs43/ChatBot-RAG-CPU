@@ -1,17 +1,36 @@
-# Navigating the Seas of AI Deploying Small Language Models on Compact Edge computer for Maritime Applications 🌊⛵
+# Navigating the Seas of AI: Deploying Small Language Models on Compact Edge Computers for Maritime Applications 🌊⛵
 
-This repo contains the code implemented to create a Chat-bot based on a Small Language Model and integrate with R.A.G, optimized to run on a Intel CPU utilizing [OpenVINO toolkit]( https://github.com/openvinotoolkit/openvino). 
+This repository contains the code for creating a chatbot based on a Small Language Model (SLM) integrated with Retrieval-Augmented Generation (R.A.G.), optimized to run on an Intel CPU using the [OpenVINO toolkit](https://github.com/openvinotoolkit/openvino).
 
-Check [here](https://docs.openvino.ai/2024/about-openvino/release-notes-openvino/system-requirements.html) if your device support OpenVINO.
+Check [here](https://docs.openvino.ai/2024/about-openvino/release-notes-openvino/system-requirements.html) to see if your device supports OpenVINO.
 
-This project was developed as my final work at Università di Genova MSc in Computer Science track Artificial Intelligence.
+This project was developed as my final work for the MSc in Computer Science, Artificial Intelligence track, at Università di Genova.
 
-First of all you have to downlaod all the dependencies using: ```
-pip install -r requirements.txt ```
+---
 
-To simple run the code you have to download the embedding model, reranker model if you want and a SLM.
+## Getting Started
 
-Then create the vector index for the R.A.G part running the ```python .\bin\create_vectordb.py ``` you can adjust the parameters as you wnat by command.
+### 1. Install Dependencies
+First, download all the required dependencies by running:
 
-Once download all the models and create the vector index you can see the code working using ``` python .\bin\main.py ```
+```bash
+pip install -r requirements.txt
+```
+### 2. Download Required Models
+To run the code, you need to download:
+- An embedding model
+- (Optional) A reranker model
+- A Small Language Model (SLM)
 
+### 3. Create the Vector Index for R.A.G.
+Generate the vector index required for the R.A.G. part by running:
+
+```bash
+python ./bin/create_vectordb.py
+```
+You can adjust the parameters using the available command-line options.
+
+### 4. Run the Main Application
+Once all models are downloaded and the vector index is created, you can execute the main application with:
+
+```python ./bin/main.py```
