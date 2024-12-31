@@ -8,7 +8,7 @@ This project was developed as my final work for the MSc in Computer Science, Art
 
 ---
 
-## Getting Started
+## Getting Started 🚀
 
 ### 1. Install Dependencies
 First, download all the required dependencies by running:
@@ -33,4 +33,12 @@ You can adjust the parameters using the available command-line options.
 ### 4. Run the Main Application
 Once all models are downloaded and the vector index is created, you can execute the main application with:
 
-```python ./bin/main.py```
+```bash
+python ./bin/main.py
+```
+if you want try the application with a GUI done with Gradio you can execute the following command:
+
+```bash
+python ./bin/main_gradio.py
+```
+
