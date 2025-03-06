@@ -142,13 +142,15 @@ def create_rag_chain(vector_index, slm, vector_search_top_k, vector_rerank_top_n
     Create a RAG chain from a vectorstore
 
     Params:
-      db: vectorstore
-      llm: language model
-      vector_search_top_k: top k for search
-      vector_rerank_top_n: top n for rerank
-      run_rerank: run rerank
-      search_method: search method
-      score_threshold: score threshold
+        vector_index: vectorstore
+        slm: small language model
+        vector_search_top_k: top k for search
+        vector_rerank_top_n: top n for rerank
+        reranker: reranker instance
+        search_method: search method
+        score_threshold: score threshold
+        prompt_template: prompt template of the slm
+        default_rag_prompt: default system prompt for RAG
     Returns:
       RAG chain
     """ 
