@@ -1,4 +1,4 @@
-from vectordb import create_vectordb, load_single_document, load_hf_embedding_model, load_ov_embedding_model
+from vectordb import create_vectordb
 from config import pdf_path, vectorstore_path
 import argparse
 import os
@@ -48,6 +48,3 @@ if __name__ == "__main__":
     except Exception as e:
         logging.error(f"Failed to create vector store: {e}")
         raise
-
-
-

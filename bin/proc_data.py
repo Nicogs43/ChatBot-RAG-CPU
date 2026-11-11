@@ -1,50 +1,53 @@
-import pandas as pd
-import logging
-from datasets import Dataset
 import json
-from config import model_dict
+import logging
+
+import pandas as pd
+
+from config import DATA_DIR, model_dict
+
+
+def _split_legacy_answer(answer_text):
+    """Thesis-era CSVs: the answer column holds the whole echoed Qwen prompt.
+    Returns (clean answer, context) parsed out of the chat markers."""
+    if "<|im_start|>user" in answer_text and "<|im_start|>assistant<|im_end|>" in answer_text:
+        context_part = answer_text.split("Context:")[1].split("<|im_end|>")[0].strip()
+        answer_part = answer_text.split("<|im_start|>assistant<|im_end|>")[1].strip()
+        return answer_part, [context_part]
+    # If markers are not found, keep the original content
+    return answer_text, [""]
 
 
 def proc_datacreated_by_qwen():
-    filtered_dict = {k: v for k, v in model_dict.items() if k.startswith('q')}
-    for model_name, model_details in model_dict.items():
-        df = pd.read_csv(f"../data/{model_name}_data_with_answer.csv")
-        # Initialize lists to store the cleaned answers and contexts
-        cleaned_answers = []
-        contexts = []
+    for model_name in model_dict:
+        df = pd.read_csv(DATA_DIR / f"{model_name}_data_with_answer.csv")
 
-        # Iterate over each row in the DataFrame
-        for index, row in df.iterrows():
-            answer_text = row['answer']
-            
-            # Split the answer text based on the markers <|im_start|> and <|im_end|>
-            if "<|im_start|>user" in answer_text and "<|im_start|>assistant<|im_end|>" in answer_text:
-                # Extract context and the cleaned answer
-                context_part = answer_text.split("Context:")[1].split("<|im_end|>")[0].strip()
-                answer_part = answer_text.split("<|im_start|>assistant<|im_end|>")[1].strip()
-                
-                # Append to the lists
-                cleaned_answers.append(answer_part)
-                contexts.append([context_part])
-            else:
-                # If markers are not found, append the original content
-                cleaned_answers.append(answer_text)
-                contexts.append([""])
+        if "contexts" in df.columns:
+            # Current test_SLMs.py output: clean answers plus a JSON list of contexts
+            cleaned_answers = df["answer"].tolist()
+            contexts = [json.loads(c) for c in df["contexts"]]
+        else:
+            cleaned_answers, contexts = [], []
+            for answer_text in df["answer"]:
+                answer, context = _split_legacy_answer(answer_text)
+                cleaned_answers.append(answer)
+                contexts.append(context)
 
         print(len(contexts))
         # Create a new dictionary with cleaned answers and contexts
         dictionary = {
-            "question": df['question'].tolist(),
-            "ground_truth": df['ground_truths'].tolist(),
+            "question": df["question"].tolist(),
+            "ground_truth": df["ground_truths"].tolist(),
             "answer": cleaned_answers,
-            "contexts": contexts
-
+            "contexts": contexts,
         }
         try:
-            with open(f'../data/{model_name}_with_answer_and_contexts_cleaned.json', 'w') as f:
+            with open(DATA_DIR / f"{model_name}_with_answer_and_contexts_cleaned.json", "w") as f:
                 json.dump(dictionary, f)
         except Exception as e:
             logging.error("Error saving the data: {}".format(e))
 
     logging.info("Data cleaning completed successfully.")
 
+
+if __name__ == "__main__":
+    proc_datacreated_by_qwen()

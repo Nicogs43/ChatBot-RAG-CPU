@@ -1,27 +1,18 @@
-from config import ov_config, vectorstore_path, model_dict
+from config import INFERENCE_TIME_DIR, QUESTIONS_PATH, model_dict
 import pandas as pd
-from vectordb import load_reranker_model, load_ov_embedding_model, create_rag_chain
-from chatbot import request_cancel, initialize_openvino_pipeline
-from langchain_community.vectorstores import FAISS
+from chatbot import RagEngine, load_retrieval_resources
 import argparse
 import gc
-import warnings
 import logging
 import time
 import os
 import psutil
 import sys
 import threading
-
-warnings.filterwarnings(
-    "ignore",
-    message="`clean_up_tokenization_spaces` was not set",
-    category=FutureWarning,
-)
+from pathlib import Path
 
 logging.basicConfig(level=logging.INFO)
 
-OUTPUT_DIR = "../data/inference_time"
 MB = 1024 * 1024
 process = psutil.Process(os.getpid())
 
@@ -93,7 +84,7 @@ def diff_snapshots(before, after, prefix=""):
     }
 
 
-def invoke_with_peak_rss(rag_chain, question, sample_interval=0.05):
+def invoke_with_peak_rss(engine, question, sample_interval=0.05):
     before = get_memory_snapshot()
     sampled_peak_mb = before["proc_rss_mb"]
     stop_sampling = threading.Event()
@@ -108,7 +99,7 @@ def invoke_with_peak_rss(rag_chain, question, sample_interval=0.05):
     sampler_thread.start()
     start_time_inference = time.perf_counter()
     try:
-        rag_chain.invoke(input={"input": question})
+        engine.invoke(question)
     finally:
         end_time_inference = time.perf_counter()
         stop_sampling.set()
@@ -134,38 +125,12 @@ def invoke_with_peak_rss(rag_chain, question, sample_interval=0.05):
     }
 
 
-def save_init(time_init_dict, suffix):
+def save_init(time_init_dict, suffix, output_dir):
     if not time_init_dict:
         return
     save_time_init = pd.DataFrame.from_dict(time_init_dict, orient="index").reset_index()
     save_time_init = save_time_init.rename(columns={"index": "model"})
-    save_time_init.to_csv(f"{OUTPUT_DIR}/time_initialization_{suffix}.csv", index=False)
-
-
-def build_rag_chain(model_details, vectorstore, reranker):
-    ov_slm = initialize_openvino_pipeline(ov_config, model_id=model_details["model_path"])
-    ov_slm.pipeline_kwargs = dict(
-        max_new_tokens=1024,
-        temperature=0.7,
-        do_sample=0.7 > 0.0,
-        top_p=0.9,
-        top_k=50,
-        repetition_penalty=1.1,
-        tokenizer=ov_slm.pipeline.tokenizer,
-        skip_special_tokens=True,
-    )
-    rag_chain = create_rag_chain(
-        vector_index=vectorstore,
-        slm=ov_slm,
-        vector_search_top_k=5,
-        vector_rerank_top_n=2,
-        reranker=reranker,
-        search_method="similarity_score_threshold",
-        score_threshold=0.6,
-        prompt_template=model_details["prompt_template"],
-        default_rag_prompt=model_details["default_rag_prompt"],
-    )
-    return ov_slm, rag_chain
+    save_time_init.to_csv(output_dir / f"time_initialization_{suffix}.csv", index=False)
 
 
 def main():
@@ -174,11 +139,16 @@ def main():
                         help="'first': one cold call on the first question (*_first_question.csv). "
                              "'all': every question in the dataset, i.e. the inference-steps series (*_new.csv).")
     parser.add_argument("--pause", type=float, default=1.0, help="Seconds to wait between questions in 'all' mode")
+    parser.add_argument("--models", nargs="*", choices=list(model_dict), default=list(model_dict),
+                        help="Model keys to measure (default: all)")
+    parser.add_argument("--output-dir", type=Path, default=INFERENCE_TIME_DIR,
+                        help="Where to write the CSVs (default: data/inference_time/, which holds the thesis results)")
     args = parser.parse_args()
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     suffix = "first_question" if args.mode == "first" else "new"
 
     try:
-        data = pd.read_csv('../data/questions_ground_truths_25.csv')
+        data = pd.read_csv(QUESTIONS_PATH)
     except FileNotFoundError:
         raise ValueError("Error loading data")
     if data.empty:
@@ -187,24 +157,18 @@ def main():
     if args.mode == "first":
         questions = questions[:1]
 
-    try:
-        vectorstore = FAISS.load_local(vectorstore_path, embeddings=load_ov_embedding_model(), allow_dangerous_deserialization=True)
-    except Exception as e:
-        raise ValueError("Error loading vectorstore{}".format(e))
-
-    logging.info("Loading reranker")
-    reranker = load_reranker_model()
+    vectorstore, reranker = load_retrieval_resources()
 
     time_init_dict = {}
     interrupted = False
-    for model_name, model_details in model_dict.items():
+    for model_name in args.models:
         logging.info(f"Testing model: {model_name}")
-        ov_slm = rag_chain = None
+        engine = None
         time_inference_list = []
         try:
             init_ram_before = get_memory_snapshot()
             start_time_initialization = time.perf_counter()
-            ov_slm, rag_chain = build_rag_chain(model_details, vectorstore, reranker)
+            engine = RagEngine(model_name, vectorstore, reranker)
             init_time = time.perf_counter() - start_time_initialization
             init_ram_after = get_memory_snapshot()
             time_init_dict[model_name] = {
@@ -214,8 +178,7 @@ def main():
             logging.info(f"Initialization time for model {model_name}: {init_time}")
 
             for i, question in enumerate(questions):
-                time_inference_list.append(invoke_with_peak_rss(rag_chain, question))
-                request_cancel(ov_slm=ov_slm)
+                time_inference_list.append(invoke_with_peak_rss(engine, question))
                 if i < len(questions) - 1:
                     time.sleep(args.pause)
         except KeyboardInterrupt:
@@ -224,18 +187,18 @@ def main():
         except Exception:
             logging.exception(f"Model {model_name} failed; continuing with the next model.")
         finally:
-            # Drop BOTH references (rag_chain holds the model too) and collect, so the next
+            # Drop the engine (it holds the model) and collect, so the next
             # model is measured without the previous one still resident.
-            ov_slm = rag_chain = None
+            engine = None
             gc.collect()
             logging.info(f"Session ended for model {model_name}.")
 
         # Only write when there is something to write, so an interrupted/failed run
         # never overwrites previous results with an empty file.
         if time_inference_list:
-            pd.DataFrame(time_inference_list).to_csv(f"{OUTPUT_DIR}/{model_name}_time_inference_{suffix}.csv", index=False)
+            pd.DataFrame(time_inference_list).to_csv(args.output_dir / f"{model_name}_time_inference_{suffix}.csv", index=False)
             print(f"Data saved successfully for model: {model_name}")
-        save_init(time_init_dict, suffix)  # save after every model so earlier results survive a crash
+        save_init(time_init_dict, suffix, args.output_dir)  # save after every model so earlier results survive a crash
 
         if interrupted:
             break

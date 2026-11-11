@@ -25,7 +25,7 @@ To run the code, you need to download (from the repository root):
 - A Small Language Model (SLM) ```uv run python download_model.py```
 
 ### 3. Create the Vector Index for R.A.G.
-The scripts in `bin/` use relative paths, so run them from inside that folder. Generate the vector index required for the R.A.G. part by running:
+Generate the vector index required for the R.A.G. part by running:
 
 ```bash
 cd bin
@@ -37,8 +37,9 @@ You can adjust the parameters using the available command-line options.
 Once all models are downloaded and the vector index is created, you can execute the main application (still from `bin/`) with:
 
 ```bash
-uv run python main.py
+uv run python main.py --model qwen_0.5b
 ```
+`--model` takes one of the keys of `model_dict` in `bin/config.py` (default `phi_int4`).
 if you want try the application with a GUI done with Gradio you can execute the following command:
 
 ```bash

@@ -1,94 +1,72 @@
-from config import phi_rag_prompt_template, ov_config, vectorstore_path, model_dict
-import pandas as pd 
-from vectordb import load_reranker_model, load_ov_embedding_model, create_rag_chain
-from chatbot import request_cancel, initialize_openvino_pipeline
-from config import vectorstore_path, ov_config, phi_rag_prompt_template, gemma_rag_prompt_template, qwen_rag_prompt_template
-from langchain_community.vectorstores import FAISS
-import warnings
+import argparse
+import gc
+import json
 import logging
 import time
+from pathlib import Path
 
-warnings.filterwarnings(
-    "ignore",
-    message="`clean_up_tokenization_spaces` was not set",
-    category=FutureWarning,
-)
+import pandas as pd
 
-# Load the question dataset
-try:
-    data = pd.read_csv('../data/questions_ground_truths_25.csv')
-except FileNotFoundError:
-    raise ValueError("Error loading data")
+from chatbot import RagEngine, load_retrieval_resources
+from config import DATA_DIR, QUESTIONS_PATH, model_dict
 
-# Load the vector store
-try:
-    vectorstore = FAISS.load_local(vectorstore_path, embeddings=load_ov_embedding_model(), allow_dangerous_deserialization=True)
-except Exception as e:
-    raise ValueError("Error loading vectorstore{}".format(e))
-
-logging.info("Loading reranker")
-reranker = load_reranker_model()
+logging.basicConfig(level=logging.INFO)
 
 
-# Iterate over each model in model_dict
-for model_name, model_details in model_dict.items():
-    logging.info(f"Testing model: {model_name}")
-    
-    # Load model-specific pipeline
-    ov_slm = initialize_openvino_pipeline(ov_config, model_id=model_details["model_path"])
-    
-    # Set pipeline configurations
-    pipeline_kwargs = dict(
-        max_new_tokens=1024,
-        temperature=0.7,
-        do_sample=0.7 > 0.0,
-        top_p=0.9,
-        top_k=50,
-        repetition_penalty=1.1,
-        tokenizer=ov_slm.pipeline.tokenizer,
-        skip_special_tokens=True,
-    )
-    ov_slm.pipeline_kwargs = pipeline_kwargs
-    
-    # Create the RAG chain with model-specific configurations
-    rag_chain = create_rag_chain(
-        vector_index=vectorstore,
-        slm=ov_slm,
-        vector_search_top_k=5,
-        vector_rerank_top_n=2,
-        reranker=reranker,
-        search_method="similarity_score_threshold",
-        score_threshold=0.6,
-        prompt_template=model_details["prompt_template"],
-        default_rag_prompt=model_details["default_rag_prompt"],
-    )
-    
-    # Collect answers for this model
-    answers = []
+def main():
+    parser = argparse.ArgumentParser(description="Answer the evaluation questions with each model in model_dict")
+    parser.add_argument("--models", nargs="*", choices=list(model_dict), default=list(model_dict),
+                        help="Model keys to test (default: all)")
+    parser.add_argument("--output-dir", type=Path, default=DATA_DIR,
+                        help="Where to write <model>_data_with_answer.csv (default: data/, which holds the thesis results)")
+    args = parser.parse_args()
+
+    # Load the question dataset
     try:
-        for question in data['Question']:
-            output = rag_chain.invoke(input={"input": question})
-            answers.append(output['answer'])
-            time.sleep(1)  # Pause to prevent overloading
-        request_cancel(ov_slm=ov_slm)
-    except KeyboardInterrupt as e:
-        logging.info(e)
-    finally:
-        del ov_slm
-        logging.info(f"Session ended for model {model_name}.")
+        data = pd.read_csv(QUESTIONS_PATH)
+    except FileNotFoundError:
+        raise ValueError("Error loading data")
 
-    # Save results for this model
-    data_with_answer = {
-        "question": data['Question'],
-        "answer": answers,
-        "ground_truths": data['ground_truths']
-    }
-    save_data = pd.DataFrame.from_dict(data_with_answer)
-    save_path = f"../data/{model_name}_data_with_answer.csv"
-    save_data.to_csv(save_path, index=False)
-    print(f"Data saved successfully for model {model_name} at {save_path}")
+    args.output_dir.mkdir(parents=True, exist_ok=True)
 
-# Clean up resources after all models have been tested
-del vectorstore
-del reranker
-logging.info("All models tested. Resources cleaned up.")
+    vectorstore, reranker = load_retrieval_resources()
+
+    for model_name in args.models:
+        logging.info(f"Testing model: {model_name}")
+        engine = RagEngine(model_name, vectorstore, reranker)
+
+        # Collect answers (and the retrieved contexts) for this model
+        answers, contexts = [], []
+        try:
+            for question in data["Question"]:
+                output = engine.invoke(question)
+                answers.append(output["answer"])
+                contexts.append(json.dumps([doc.page_content for doc in output["context"]]))
+                time.sleep(1)  # Pause to prevent overloading
+        except KeyboardInterrupt as e:
+            logging.info(e)
+        finally:
+            engine = None
+            gc.collect()
+            logging.info(f"Session ended for model {model_name}.")
+
+        if len(answers) < len(data):
+            logging.info(f"Model {model_name} interrupted after {len(answers)} answers; nothing saved.")
+            break
+
+        # Save results for this model
+        save_data = pd.DataFrame({
+            "question": data["Question"],
+            "answer": answers,
+            "ground_truths": data["ground_truths"],
+            "contexts": contexts,  # JSON list of the retrieved passages
+        })
+        save_path = args.output_dir / f"{model_name}_data_with_answer.csv"
+        save_data.to_csv(save_path, index=False)
+        print(f"Data saved successfully for model {model_name} at {save_path}")
+
+    logging.info("All models tested. Resources cleaned up.")
+
+
+if __name__ == "__main__":
+    main()

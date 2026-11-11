@@ -1,24 +1,22 @@
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
-from langchain_community.embeddings import OpenVINOBgeEmbeddings
-from typing import List
-from langchain_community.vectorstores import FAISS
-from langchain.docstore.document import Document
-from langchain_community.document_compressors.openvino_rerank import OpenVINOReranker
-from langchain.prompts import PromptTemplate
-from langchain.chains.retrieval import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.retrievers import ContextualCompressionRetriever
-from config import vectorstore_path, phi_rag_prompt_template, qwen_rag_prompt_template, pdf_path
-import time
-from langchain.text_splitter import (
-    CharacterTextSplitter,
-    RecursiveCharacterTextSplitter,
-    MarkdownTextSplitter,
-)
-from langchain_community.document_loaders import PyPDFLoader
 import logging
+import time
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-logging.basicConfig(level=logging.INFO)
+from langchain_community.document_compressors.openvino_rerank import OpenVINOReranker
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.embeddings import OpenVINOBgeEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_core.documents import Document
+from langchain_text_splitters import (
+    CharacterTextSplitter,
+    MarkdownTextSplitter,
+    RecursiveCharacterTextSplitter,
+)
+
+from config import embedding_model_id, embedding_models_dir, reranker_path, vectorstore_path
+
+logger = logging.getLogger(__name__)
 
 TEXT_SPLITERS = {
     "Character": CharacterTextSplitter,
@@ -28,69 +26,56 @@ TEXT_SPLITERS = {
 
 LOADERS = {".pdf": (PyPDFLoader, {})}  # can be also used PyPDFium2  for pdf loading seems more faster
 
-def load_hf_embedding_model(model_name: str = "BAAI/bge-small-en-v1.5") -> HuggingFaceBgeEmbeddings:
-    """
-    Args:
-        model_name (str): The name of the model to load.
-    Returns: 
-        HuggingFaceBgeEmbeddings: The loaded model.
-    """
-    try:
-        logging.info("Loading huggingface embedding model")
-        model_kwargs = {'device': 'cpu'}
-        encode_kwargs = {'mean_pooling': False,'normalize_embeddings': True, "batch_size": 4}
-        hf = HuggingFaceBgeEmbeddings(
-        model_name=model_name,
-        model_kwargs=model_kwargs,
-        encode_kwargs=encode_kwargs,
-        #query_instruction="", #this is the query instruction because bge-m3 don't need a query instruction
-        #using a different model from bge-m3 you can use the query_instruction parameter or leave it as setted by default
-        )
-        return hf
-    except Exception as e:
-        raise ValueError("Error loading huggingface embedding model{}".format(e))
-    
-def load_ov_embedding_model(model_name_or_path: str = "BAAI/bge-small-en-v1.5") -> OpenVINOBgeEmbeddings:
-    """
-    Args:
-        model_name_or_path (str): The name of the model to load.
-    Returns: 
-        OpenVINOBgeEmbeddings: The loaded model.
-    """
-    try:
-        logging.info("Loading openvino embedding model")
-        model_kwargs = {'device': 'cpu'}
-        encode_kwargs = {'mean_pooling': False,'normalize_embeddings': True, "batch_size": 4}
-        ov = OpenVINOBgeEmbeddings( #using this method has the right value for query_instructions for bge models 
-        model_name_or_path=model_name_or_path,
-        model_kwargs=model_kwargs,
-        encode_kwargs=encode_kwargs,
-        show_progress=True,
-        )
-        return ov
-    except Exception as e:
-        raise ValueError("Error loading openvino embedding model{}".format(e))
 
-def load_reranker_model(rerank_model_name: str = "../reranker/bge-reranker-v2-m3_quantized") -> OpenVINOReranker:
+def load_ov_embedding_model(model_name_or_path: str = embedding_model_id) -> OpenVINOBgeEmbeddings:
     """
     Args:
-        rerank_model_name (str): The name of the model to load.
-    Returns: 
+        model_name_or_path (str): HF id or local folder of the embedding model.
+    Returns:
+        OpenVINOBgeEmbeddings: The loaded model.
+
+    If the model was already exported with download_embedding_model.py, the local
+    copy in models/ is used. Otherwise it is downloaded and converted to OpenVINO
+    at every start, which is much slower.
+    """
+    local_copy = embedding_models_dir / model_name_or_path
+    if (local_copy / "openvino_model.xml").exists():
+        model_name_or_path = str(local_copy)
+    elif not Path(model_name_or_path).exists():
+        logger.warning(
+            "No local OpenVINO export of %s: converting it now. Run download_embedding_model.py once to skip this.",
+            model_name_or_path,
+        )
+    try:
+        logger.info("Loading openvino embedding model from %s", model_name_or_path)
+        return OpenVINOBgeEmbeddings(  # using this class has the right value for query_instruction for bge models
+            model_name_or_path=model_name_or_path,
+            model_kwargs={"device": "CPU"},
+            encode_kwargs={"mean_pooling": False, "normalize_embeddings": True, "batch_size": 4},
+            show_progress=True,
+        )
+    except Exception as e:
+        raise ValueError(f"Error loading openvino embedding model: {e}") from e
+
+
+def load_reranker_model(rerank_model_name: str = reranker_path, top_n: int = 2) -> OpenVINOReranker:
+    """
+    Args:
+        rerank_model_name (str): local folder (or HF id) of the reranker model.
+        top_n (int): number of documents kept after reranking.
+    Returns:
         OpenVINOReranker: the loaded model.
     """
     try:
-        rerank_model_kwargs = {"device": "CPU"}
-        rerank_top_n = 2
-
-        reranker = OpenVINOReranker(
-        model_name_or_path=rerank_model_name,
-        model_kwargs=rerank_model_kwargs,
-        top_n=rerank_top_n,
+        logger.info("Loading reranker from %s", rerank_model_name)
+        return OpenVINOReranker(
+            model_name_or_path=rerank_model_name,
+            model_kwargs={"device": "CPU"},
+            top_n=top_n,
         )
-        logging.info("Loading reranker from -> {}".format(rerank_model_name))
-        return reranker
     except Exception as e:
-        raise ValueError("Error loading reranker{}".format(e))
+        raise ValueError(f"Error loading reranker: {e}") from e
+
 
 def load_single_document(file_path: str) -> List[Document]:
     """
@@ -137,34 +122,46 @@ def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap, embedding_mod
 
     return "Vectorstore created at {}".format(vector_store_name)
 
-def create_rag_chain(vector_index, slm, vector_search_top_k, vector_rerank_top_n, reranker, search_method, score_threshold, prompt_template, default_rag_prompt = "QWEN_DEFAULT_RAG_PROMPT"):
+def retrieve_documents(
+    vector_index: FAISS,
+    question: str,
+    reranker: Optional[OpenVINOReranker] = None,
+    search_method: str = "similarity_score_threshold",
+    vector_search_top_k: int = 5,
+    vector_rerank_top_n: int = 2,
+    score_threshold: float = 0.6,
+) -> List[Document]:
     """
-    Create a RAG chain from a vectorstore
+    Retrieve the documents used as context for a question.
 
     Params:
         vector_index: vectorstore
-        slm: small language model
-        vector_search_top_k: top k for search
-        vector_rerank_top_n: top n for rerank
-        reranker: reranker instance
+        question: the user question
+        reranker: reranker instance (optional)
         search_method: search method
-        score_threshold: score threshold
-        prompt_template: prompt template of the slm
-        default_rag_prompt: default system prompt for RAG
+        vector_search_top_k: top k for search
+        vector_rerank_top_n: top n kept after rerank
+        score_threshold: score threshold (only for similarity_score_threshold)
     Returns:
-      RAG chain
-    """ 
+      the vector search results, narrowed down by the reranker if there is one
+    """
     if vector_rerank_top_n > vector_search_top_k:
         raise ValueError("Search top k must >= Rerank top n")
 
+    search_kwargs: Dict[str, Any] = {"k": vector_search_top_k}
     if search_method == "similarity_score_threshold":
-        search_kwargs = {"k": vector_search_top_k, "score_threshold": score_threshold}
-    else:
-        search_kwargs = {"k": vector_search_top_k}
+        search_kwargs["score_threshold"] = score_threshold
     retriever = vector_index.as_retriever(search_kwargs=search_kwargs, search_type=search_method)
-    if reranker:
+    docs = retriever.invoke(question)
+    if reranker and docs:
         reranker.top_n = vector_rerank_top_n
-        retriever = ContextualCompressionRetriever(base_compressor=reranker, base_retriever=retriever)
-    prompt = PromptTemplate(input_variables=[default_rag_prompt, "context", "question"], template=prompt_template)
-    combine_docs_chain = create_stuff_documents_chain(slm, prompt)
-    return  create_retrieval_chain(retriever, combine_docs_chain)
+        reranked = []
+        for hit in reranker.compress_documents(docs, question):
+            # The reranker returns bare copies: metadata is only {"id": position in docs, "relevance_score"}.
+            # Put the original metadata (source, page) back.
+            original = docs[hit.metadata["id"]] if "id" in hit.metadata else hit
+            score = float(hit.metadata.get("relevance_score", 0.0))
+            reranked.append(Document(page_content=hit.page_content,
+                                     metadata={**original.metadata, "relevance_score": score}))
+        docs = reranked
+    return docs

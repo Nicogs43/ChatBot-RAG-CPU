@@ -1,5 +1,5 @@
 from optimum.intel import OVModelForCausalLM
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer
 import os 
 from pathlib import Path
 import subprocess
@@ -8,34 +8,30 @@ import sys
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
+ROOT = Path(__file__).resolve().parent
+
+
+def run_export(weight_format, output_dir, extra_args=()):
+    export_command = ["optimum-cli", "export", "openvino", "--model", hf_model_id,
+                      "--task", "text-generation-with-past", "--weight-format", weight_format,
+                      *extra_args, "--trust-remote-code", str(output_dir)]
+    logging.info(" ".join(export_command))
+    subprocess.run(export_command, check=True)
+
 def convert_to_int8():
     if (int8_model_dir / "openvino_model.xml").exists():
         return
     int8_model_dir.mkdir(parents=True, exist_ok=True)
-    #remote_code = model_configuration.get("remote_code", False)
-    export_command_base = "optimum-cli export openvino --model {} --task text-generation-with-past --weight-format int8".format(hf_model_id)
-    export_command_base += " --trust-remote-code"
-    export_command = export_command_base + " " + str(int8_model_dir)
-    logging.info(export_command)
-    subprocess.run(export_command)
+    run_export("int8", int8_model_dir)
 
 def convert_to_int4( int4_mode:str, group_size:int = 128, ratio:float = 0.8):
     if (int4_model_dir / "openvino_model.xml").exists():
         return
-    #remote_code = model_configuration.get("remote_code", False)
     int4_model_dir.mkdir(parents=True, exist_ok=True)
-    export_command_base = "optimum-cli export openvino --model {} --task text-generation-with-past --weight-format int4".format(hf_model_id)
-    int4_compression_args = " --group-size {} --ratio {}".format(group_size, ratio)
+    int4_compression_args = ["--group-size", str(group_size), "--ratio", str(ratio)]
     if int4_mode == "SYM":
-        int4_compression_args += " --sym"
-    #if enable_awq.value:
-    #   int4_compression_args += " --awq --dataset wikitext2 --num-samples 128"
-    export_command_base += int4_compression_args
-    #if remote_code:
-    export_command_base += " --trust-remote-code"
-    export_command = export_command_base + " " + str(int4_model_dir)
-    logging.info(export_command)
-    subprocess.run(export_command)
+        int4_compression_args.append("--sym")
+    run_export("int4", int4_model_dir, int4_compression_args)
 
 
 #insert the model that you want to download
@@ -50,7 +46,7 @@ if __name__ == "__main__":
         sys.exit()
     #split the model_id in model_vendor and actual_model_id
     model_vendor, model_id = hf_model_id.split("/")
-    local_model_path = f'./model/{model_vendor}/{model_id}'
+    local_model_path = str(ROOT / 'model' / model_vendor / model_id)
     os.makedirs(local_model_path, exist_ok=True)
     logging.info(f"Downloading the model {model_id} from {model_vendor}")
 
@@ -91,10 +87,6 @@ if __name__ == "__main__":
             convert_to_int4(int4_mode, group_size, ratio)
 
         elif precision == "no_compression":
-            export_command_base = "optimum-cli export openvino --model {} --task text-generation-with-past --weight-format fp32".format(hf_model_id)
-            export_command_base += " --trust-remote-code"
-            export_command = export_command_base + " " + str(local_model_path)
-            print(export_command)
-            subprocess.run(export_command)
+            run_export("fp32", local_model_path)
 
     logging.info(f"Model {model_id} downloaded in {local_model_path}")
