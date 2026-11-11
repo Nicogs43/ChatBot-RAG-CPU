@@ -8,24 +8,25 @@ MarineChat: a RAG chatbot for the maritime domain (Italian ports and sailing) bu
 
 ## Commands
 
-The Python venv is `.venv` (see `pyrightconfig.json`). The repo has no test suite, linter config or build step.
+Dependencies are managed with uv: `pyproject.toml` holds the direct dependencies (pinned to the thesis-era versions), `uv.lock` the full resolution, and `uv sync` creates `.venv` (Python 3.12, see `.python-version` and `pyrightconfig.json`). The project is not an installable package, and has no test suite or build step. Ruff is in the `dev` group but has no config yet.
 
 ```bash
-pip install -r requirements.txt
+uv sync                             # create/update .venv from uv.lock
+uv add <pkg> / uv lock --upgrade-package <pkg>   # change dependencies (never edit uv.lock by hand)
 
 # Model download/export (run from repo root; writes to ./model, ./reranker)
-python download_model.py            # interactive: HF id + int4/int8/no_compression
-python download_reranker_model.py   # -> reranker/bge-reranker-v2-m3_quantized
-python download_embedding_model.py  # -> models/ (note: runtime code loads the embedder by HF id, not from this folder)
+uv run python download_model.py            # interactive: HF id + int4/int8/no_compression
+uv run python download_reranker_model.py   # -> reranker/bge-reranker-v2-m3_quantized
+uv run python download_embedding_model.py  # -> models/ (note: runtime code loads the embedder by HF id, not from this folder)
 
 # Everything in bin/ must be run with bin/ as CWD (config paths are "../model/...", "../data/...")
 cd bin
-python create_vectordb.py [docs...] --splitter_name RecursiveCharacter --chunk_size 400 --chunk_overlap 50 --embedding_model BAAI/bge-small-en-v1.5 --vectorstore_path ../vectorstore_ov_400_50
-python main.py          # CLI chat loop (Phi-3.5 int4 hardcoded)
-python main_gradio.py   # Gradio UI (default Qwen2.5-0.5B from chatbot.py)
-python test_SLMs.py     # answers the 25 eval questions with every model in model_dict -> ../data/<model>_data_with_answer.csv
-python time_inference.py --mode first  # default: one cold call on question 1 per model -> ../data/inference_time/*_first_question.csv
-python time_inference.py --mode all [--pause 1.0]  # all 25 questions (inference-steps series) -> ../data/inference_time/*_new.csv
+uv run python create_vectordb.py [docs...] --splitter_name RecursiveCharacter --chunk_size 400 --chunk_overlap 50 --embedding_model BAAI/bge-small-en-v1.5 --vectorstore_path ../vectorstore_ov_400_50
+uv run python main.py          # CLI chat loop (Phi-3.5 int4 hardcoded)
+uv run python main_gradio.py   # Gradio UI (default Qwen2.5-0.5B from chatbot.py)
+uv run python test_SLMs.py     # answers the 25 eval questions with every model in model_dict -> ../data/<model>_data_with_answer.csv
+uv run python time_inference.py --mode first  # default: one cold call on question 1 per model -> ../data/inference_time/*_first_question.csv
+uv run python time_inference.py --mode all [--pause 1.0]  # all 25 questions (inference-steps series) -> ../data/inference_time/*_new.csv
 # both modes record init time, inference time and RAM (RSS + private bytes, peak during inference)
 ```
 

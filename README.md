@@ -11,34 +11,36 @@ This project was developed as my final work for the MSc in Computer Science, Art
 ## Getting Started 🚀
 
 ### 1. Install Dependencies
-First, download all the required dependencies by running:
+The project is managed with [uv](https://docs.astral.sh/uv/). After [installing uv](https://docs.astral.sh/uv/getting-started/installation/), create the environment with:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
+This creates `.venv` with Python 3.12 and the exact versions recorded in `uv.lock`.
+
 ### 2. Download Required Models
-To run the code, you need to download:
-- An embedding model ```python .\download_embedding_model.py ```
-- (Optional) A reranker model  ```python .\download_reranker_model.py ```
-- A Small Language Model (SLM)  ```python .\download_model.py ```
+To run the code, you need to download (from the repository root):
+- An embedding model ```uv run python download_embedding_model.py```
+- (Optional) A reranker model ```uv run python download_reranker_model.py```
+- A Small Language Model (SLM) ```uv run python download_model.py```
 
 ### 3. Create the Vector Index for R.A.G.
-Generate the vector index required for the R.A.G. part by running:
+The scripts in `bin/` use relative paths, so run them from inside that folder. Generate the vector index required for the R.A.G. part by running:
 
 ```bash
-python ./bin/create_vectordb.py
+cd bin
+uv run python create_vectordb.py
 ```
 You can adjust the parameters using the available command-line options.
 
 ### 4. Run the Main Application
-Once all models are downloaded and the vector index is created, you can execute the main application with:
+Once all models are downloaded and the vector index is created, you can execute the main application (still from `bin/`) with:
 
 ```bash
-python ./bin/main.py
+uv run python main.py
 ```
 if you want try the application with a GUI done with Gradio you can execute the following command:
 
 ```bash
-python ./bin/main_gradio.py
+uv run python main_gradio.py
 ```
-
