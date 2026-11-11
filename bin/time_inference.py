@@ -10,6 +10,7 @@ import logging
 import time
 import os
 import psutil
+import sys
 import threading
 
 warnings.filterwarnings(
@@ -39,13 +40,12 @@ def _os_peak_mb():
     peak_wset = getattr(process.memory_info(), "peak_wset", None)
     if peak_wset is not None:
         return _to_mb(peak_wset)
-    try:
-        import resource
-        import sys
-        max_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        return _to_mb(max_rss if sys.platform == "darwin" else max_rss * 1024)
-    except (ImportError, AttributeError):
+    if sys.platform == "win32":  # `resource` is POSIX-only
         return None
+    import resource
+    max_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    # ru_maxrss is in bytes on macOS, kilobytes on Linux
+    return _to_mb(max_rss if sys.platform == "darwin" else max_rss * 1024)
 
 
 def _private_mb():
