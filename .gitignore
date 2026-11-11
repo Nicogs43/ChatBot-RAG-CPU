@@ -172,3 +172,4 @@ samples/
 
 models/
 .claude/agents/code-reviewer.md
+.vscode/settings.json

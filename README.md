@@ -58,3 +58,13 @@ uv run ruff format .          # format
 ```
 
 The thesis experiments ran on the 2024 versions of the libraries (OpenVINO 2024.3, optimum-intel 1.19, transformers 4.44, LangChain 0.2). Those exact versions are recorded in commit `f944926`; the results in `data/` were produced with them.
+
+---
+
+## Future work 🧭
+
+Ideas for the next iterations, not yet started:
+
+- **A newer 0.5B-class model.** Export a more recent small model (qwen3.5 0.5b) with `download_model.py`, add it to `model_dict` in `bin/config.py`, and run the same 25-question evaluation and timing tests on it (`test_SLMs.py`, `time_inference.py`) to compare it with Qwen2.5-0.5B. Use `--output-dir` so the thesis results in `data/` are kept.
+- **More and different documents, up to nautical charts.** Today the index is built from a single PDF and only `.pdf` files can be loaded. The first step is several documents of different kinds in one index; the long-term goal is answering from charts and maps, which are not plain text and will need their own way of being read and retrieved.
+- **Rethink the model evaluation.** The current flow (answers CSV, then RAGAS metrics in the Colab notebooks under `evaluation/`) dates from the thesis. Review which metrics are used, how they are computed, and whether the evaluation can run locally and reproducibly.
