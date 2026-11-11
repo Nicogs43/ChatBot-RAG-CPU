@@ -1,0 +1,2 @@
+inference_time,proc_rss_mb_before,proc_rss_mb_after,proc_rss_mb_delta,proc_rss_mb_peak_during_inference,proc_rss_mb_peak_over_before,sys_percent_before,sys_percent_after,sys_used_mb_before,sys_used_mb_after
+52.78174114227295,361.48,6913.69,6552.21,6915.52,6554.04,47.7,90.2,7487.46,14155.08
