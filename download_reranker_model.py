@@ -1,5 +1,5 @@
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 
@@ -9,7 +9,17 @@ path_to_model = ROOT / "reranker" / f"{model_name}_quantized"
 print(path_to_model)
 
 subprocess.run(
-    ["optimum-cli", "export", "openvino", "--model", model_id, "--task", "text-classification",
-     "--weight-format", "int8", str(path_to_model)],
+    [
+        "optimum-cli",
+        "export",
+        "openvino",
+        "--model",
+        model_id,
+        "--task",
+        "text-classification",
+        "--weight-format",
+        "int8",
+        str(path_to_model),
+    ],
     check=True,
 )

@@ -8,11 +8,15 @@ MarineChat: a RAG chatbot for the maritime domain (Italian ports and sailing) bu
 
 ## Commands
 
-Dependencies are managed with uv: `pyproject.toml` holds the direct dependencies (lower bounds only), `uv.lock` the full resolution. The thesis experiments ran on a 2024 stack (OpenVINO 2024.3, optimum-intel 1.19, transformers 4.44, LangChain 0.2); its exact pins are in commit `f944926`, and `uv sync` creates `.venv` (Python 3.12, see `.python-version` and `pyrightconfig.json`). The project is not an installable package, and has no test suite or build step. Ruff is in the `dev` group but has no config yet.
+Dependencies are managed with uv: `pyproject.toml` holds the direct dependencies (lower bounds only), `uv.lock` the full resolution. The thesis experiments ran on a 2024 stack (OpenVINO 2024.3, optimum-intel 1.19, transformers 4.44, LangChain 0.2); its exact pins are in commit `f944926`, and `uv sync` creates `.venv` (Python 3.12, see `.python-version` and `pyrightconfig.json`). The project is not an installable package and has no build step. Ruff and pytest are in the `dev` group and configured in `pyproject.toml` (line length 120; `bin/` is on pytest's `pythonpath`).
 
 ```bash
 uv sync                             # create/update .venv from uv.lock
 uv add <pkg> / uv lock --upgrade-package <pkg>   # change dependencies (never edit uv.lock by hand)
+
+uv run pytest                       # whole suite, ~3 s, needs no model/index/network
+uv run pytest tests/test_chatbot.py -k stream   # one file / one test by keyword
+uv run ruff check . --fix && uv run ruff format .   # lint + format (evaluation/ notebooks are excluded)
 
 # Model download/export (run from repo root; writes to ./model, ./reranker)
 uv run python download_model.py            # interactive: HF id + int4/int8/no_compression
@@ -42,6 +46,10 @@ uv run python time_inference.py --mode all [--pause 1.0]  # all 25 questions (in
 - The embedding model used to query FAISS must match the one used to build it (`config.embedding_model_id`, default `BAAI/bge-small-en-v1.5`).
 - `FAISS.load_local` uses `allow_dangerous_deserialization=True`, because the index is a local pickle.
 - Phi and Gemma are slow on the development machine (minutes per question, Gemma ~15 min to load): use `qwen_0.5b` for quick checks.
+
+## Tests
+
+`tests/` covers everything that can run without a model: config, prompt building and the Gemma fallback, streaming/stop/error handling in `RagEngine`, retrieval and metadata restoring, `proc_data`, the timing helpers and the Gradio handlers and HTML rendering. `tests/conftest.py` provides `FakeModel`, `FakeTokenizer`, `FakeReranker` and the `make_engine` fixture, which builds a real `RagEngine` around them by patching `chatbot.load_openvino_model` and `chatbot.retrieve_documents`. Nothing in the suite checks real model output, speed or RAM; for that run an entry point with `qwen_0.5b`.
 
 ## Evaluation data flow
 

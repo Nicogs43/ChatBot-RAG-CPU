@@ -46,3 +46,15 @@ if you want try the application with a GUI done with Gradio you can execute the 
 uv run python main_gradio.py
 ```
 The page opens at http://127.0.0.1:7860. It streams the answer, shows the passages of the guide it was built from (with their page) and how long the answer took, and lets you switch between the models you have downloaded. Add `--no-browser` on a machine without a display.
+
+---
+
+## Development 🛠️
+
+```bash
+uv run pytest                 # tests (a few seconds, no model needed)
+uv run ruff check . --fix     # lint
+uv run ruff format .          # format
+```
+
+The thesis experiments ran on the 2024 versions of the libraries (OpenVINO 2024.3, optimum-intel 1.19, transformers 4.44, LangChain 0.2). Those exact versions are recorded in commit `f944926`; the results in `data/` were produced with them.

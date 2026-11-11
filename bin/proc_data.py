@@ -44,7 +44,7 @@ def proc_datacreated_by_qwen():
             with open(DATA_DIR / f"{model_name}_with_answer_and_contexts_cleaned.json", "w") as f:
                 json.dump(dictionary, f)
         except Exception as e:
-            logging.error("Error saving the data: {}".format(e))
+            logging.error(f"Error saving the data: {e}")
 
     logging.info("Data cleaning completed successfully.")
 

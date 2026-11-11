@@ -29,7 +29,29 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "ruff==0.6.4",
+    "pytest>=9.0",
+    "ruff>=0.17",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["bin"]
+extend-exclude = ["evaluation"]
+
+[tool.ruff.lint]
+# pycodestyle, pyflakes, import sorting, pyupgrade, bugbear
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"bin/config.py" = ["E501"]  # the system prompts are single long lines on purpose
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["bin"]
+filterwarnings = [
+    # Known and accepted for now: FAISS, the OpenVINO embeddings and the reranker come from langchain-community.
+    "ignore:`langchain-community` is being sunset:DeprecationWarning",
 ]
 
 # PyPI's Linux torch wheels bundle CUDA; this project is CPU-only.

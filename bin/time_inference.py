@@ -1,15 +1,17 @@
-from config import INFERENCE_TIME_DIR, QUESTIONS_PATH, model_dict
-import pandas as pd
-from chatbot import RagEngine, load_retrieval_resources
 import argparse
 import gc
 import logging
-import time
 import os
-import psutil
 import sys
 import threading
+import time
 from pathlib import Path
+
+import pandas as pd
+import psutil
+
+from chatbot import RagEngine, load_retrieval_resources
+from config import INFERENCE_TIME_DIR, QUESTIONS_PATH, model_dict
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,6 +36,7 @@ def _os_peak_mb():
     if sys.platform == "win32":  # `resource` is POSIX-only
         return None
     import resource
+
     max_rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     # ru_maxrss is in bytes on macOS, kilobytes on Linux
     return _to_mb(max_rss if sys.platform == "darwin" else max_rss * 1024)
@@ -134,15 +137,30 @@ def save_init(time_init_dict, suffix, output_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Measure initialization time, inference time and RAM usage for each model in model_dict")
-    parser.add_argument("--mode", choices=["first", "all"], default="first",
-                        help="'first': one cold call on the first question (*_first_question.csv). "
-                             "'all': every question in the dataset, i.e. the inference-steps series (*_new.csv).")
+    parser = argparse.ArgumentParser(
+        description="Measure initialization time, inference time and RAM usage for each model in model_dict"
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["first", "all"],
+        default="first",
+        help="'first': one cold call on the first question (*_first_question.csv). "
+        "'all': every question in the dataset, i.e. the inference-steps series (*_new.csv).",
+    )
     parser.add_argument("--pause", type=float, default=1.0, help="Seconds to wait between questions in 'all' mode")
-    parser.add_argument("--models", nargs="*", choices=list(model_dict), default=list(model_dict),
-                        help="Model keys to measure (default: all)")
-    parser.add_argument("--output-dir", type=Path, default=INFERENCE_TIME_DIR,
-                        help="Where to write the CSVs (default: data/inference_time/, which holds the thesis results)")
+    parser.add_argument(
+        "--models",
+        nargs="*",
+        choices=list(model_dict),
+        default=list(model_dict),
+        help="Model keys to measure (default: all)",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=INFERENCE_TIME_DIR,
+        help="Where to write the CSVs (default: data/inference_time/, which holds the thesis results)",
+    )
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     suffix = "first_question" if args.mode == "first" else "new"
@@ -150,7 +168,7 @@ def main():
     try:
         data = pd.read_csv(QUESTIONS_PATH)
     except FileNotFoundError:
-        raise ValueError("Error loading data")
+        raise ValueError(f"Question dataset not found: {QUESTIONS_PATH}") from None
     if data.empty:
         raise ValueError("Question dataset is empty")
     questions = data["Question"].tolist()
@@ -196,7 +214,9 @@ def main():
         # Only write when there is something to write, so an interrupted/failed run
         # never overwrites previous results with an empty file.
         if time_inference_list:
-            pd.DataFrame(time_inference_list).to_csv(args.output_dir / f"{model_name}_time_inference_{suffix}.csv", index=False)
+            pd.DataFrame(time_inference_list).to_csv(
+                args.output_dir / f"{model_name}_time_inference_{suffix}.csv", index=False
+            )
             print(f"Data saved successfully for model: {model_name}")
         save_init(time_init_dict, suffix, args.output_dir)  # save after every model so earlier results survive a crash
 

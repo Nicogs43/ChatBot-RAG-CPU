@@ -15,17 +15,26 @@ logging.basicConfig(level=logging.INFO)
 
 def main():
     parser = argparse.ArgumentParser(description="Answer the evaluation questions with each model in model_dict")
-    parser.add_argument("--models", nargs="*", choices=list(model_dict), default=list(model_dict),
-                        help="Model keys to test (default: all)")
-    parser.add_argument("--output-dir", type=Path, default=DATA_DIR,
-                        help="Where to write <model>_data_with_answer.csv (default: data/, which holds the thesis results)")
+    parser.add_argument(
+        "--models",
+        nargs="*",
+        choices=list(model_dict),
+        default=list(model_dict),
+        help="Model keys to test (default: all)",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DATA_DIR,
+        help="Where to write <model>_data_with_answer.csv (default: data/, which holds the thesis results)",
+    )
     args = parser.parse_args()
 
     # Load the question dataset
     try:
         data = pd.read_csv(QUESTIONS_PATH)
     except FileNotFoundError:
-        raise ValueError("Error loading data")
+        raise ValueError(f"Question dataset not found: {QUESTIONS_PATH}") from None
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -55,12 +64,14 @@ def main():
             break
 
         # Save results for this model
-        save_data = pd.DataFrame({
-            "question": data["Question"],
-            "answer": answers,
-            "ground_truths": data["ground_truths"],
-            "contexts": contexts,  # JSON list of the retrieved passages
-        })
+        save_data = pd.DataFrame(
+            {
+                "question": data["Question"],
+                "answer": answers,
+                "ground_truths": data["ground_truths"],
+                "contexts": contexts,  # JSON list of the retrieved passages
+            }
+        )
         save_path = args.output_dir / f"{model_name}_data_with_answer.csv"
         save_data.to_csv(save_path, index=False)
         print(f"Data saved successfully for model {model_name} at {save_path}")

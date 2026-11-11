@@ -1,7 +1,7 @@
 import logging
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from langchain_community.document_compressors.openvino_rerank import OpenVINOReranker
 from langchain_community.document_loaders import PyPDFLoader
@@ -22,7 +22,7 @@ TEXT_SPLITERS = {
     "Character": CharacterTextSplitter,
     "RecursiveCharacter": RecursiveCharacterTextSplitter,
     "Markdown": MarkdownTextSplitter,
-    }
+}
 
 LOADERS = {".pdf": (PyPDFLoader, {})}  # can be also used PyPDFium2  for pdf loading seems more faster
 
@@ -77,7 +77,7 @@ def load_reranker_model(rerank_model_name: str = reranker_path, top_n: int = 2) 
         raise ValueError(f"Error loading reranker: {e}") from e
 
 
-def load_single_document(file_path: str) -> List[Document]:
+def load_single_document(file_path: str) -> list[Document]:
     """
     helper for loading a single document
     Params:
@@ -94,7 +94,9 @@ def load_single_document(file_path: str) -> List[Document]:
     raise ValueError(f"File does not exist '{ext}'")
 
 
-def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap, embedding_model, vector_store_name = vectorstore_path )-> str:
+def create_vectordb(
+    docs, spliter_name, chunk_size, chunk_overlap, embedding_model, vector_store_name=vectorstore_path
+) -> str:
     """
     Create a vectorstore from a list of documents
 
@@ -113,24 +115,28 @@ def create_vectordb(docs, spliter_name, chunk_size, chunk_overlap, embedding_mod
             doc = doc.name
         documents.extend(load_single_document(doc))
 
-    text_splitter = TEXT_SPLITERS[spliter_name](chunk_size=chunk_size, chunk_overlap=chunk_overlap,)
+    text_splitter = TEXT_SPLITERS[spliter_name](
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+    )
     texts = text_splitter.split_documents(documents)
-    start_time = time.time()    
+    start_time = time.time()
     vector_index = FAISS.from_documents(texts, load_ov_embedding_model(embedding_model))
     print("--- %s seconds ---" % (time.time() - start_time))
     vector_index.save_local(vector_store_name)
 
-    return "Vectorstore created at {}".format(vector_store_name)
+    return f"Vectorstore created at {vector_store_name}"
+
 
 def retrieve_documents(
     vector_index: FAISS,
     question: str,
-    reranker: Optional[OpenVINOReranker] = None,
+    reranker: OpenVINOReranker | None = None,
     search_method: str = "similarity_score_threshold",
     vector_search_top_k: int = 5,
     vector_rerank_top_n: int = 2,
     score_threshold: float = 0.6,
-) -> List[Document]:
+) -> list[Document]:
     """
     Retrieve the documents used as context for a question.
 
@@ -148,7 +154,7 @@ def retrieve_documents(
     if vector_rerank_top_n > vector_search_top_k:
         raise ValueError("Search top k must >= Rerank top n")
 
-    search_kwargs: Dict[str, Any] = {"k": vector_search_top_k}
+    search_kwargs: dict[str, Any] = {"k": vector_search_top_k}
     if search_method == "similarity_score_threshold":
         search_kwargs["score_threshold"] = score_threshold
     retriever = vector_index.as_retriever(search_kwargs=search_kwargs, search_type=search_method)
@@ -161,7 +167,8 @@ def retrieve_documents(
             # Put the original metadata (source, page) back.
             original = docs[hit.metadata["id"]] if "id" in hit.metadata else hit
             score = float(hit.metadata.get("relevance_score", 0.0))
-            reranked.append(Document(page_content=hit.page_content,
-                                     metadata={**original.metadata, "relevance_score": score}))
+            reranked.append(
+                Document(page_content=hit.page_content, metadata={**original.metadata, "relevance_score": score})
+            )
         docs = reranked
     return docs

@@ -49,8 +49,10 @@ def render_sources(docs=None, note=None) -> str:
     if docs is None:
         return '<p class="mc-note">The passages behind each answer appear here, with their page in the guide.</p>'
     if not docs:
-        return ('<p class="mc-note mc-warning">No passage in the guide matched this question closely enough. '
-                "The answer comes from the model alone, so check it before relying on it.</p>")
+        return (
+            '<p class="mc-note mc-warning">No passage in the guide matched this question closely enough. '
+            "The answer comes from the model alone, so check it before relying on it.</p>"
+        )
     items = []
     for doc in docs:
         page = doc.metadata.get("page")
@@ -89,8 +91,16 @@ def start_question(question, history):
         {"role": "user", "content": question},
         {"role": "assistant", "content": WAITING_NOTE},
     ]
-    return ("", history, question, render_sources(note="Searching the guide…"), render_speed(note="Measuring…"),
-            gr.update(visible=False), gr.update(visible=True), gr.update(interactive=False))
+    return (
+        "",
+        history,
+        question,
+        render_sources(note="Searching the guide…"),
+        render_speed(note="Measuring…"),
+        gr.update(visible=False),
+        gr.update(visible=True),
+        gr.update(interactive=False),
+    )
 
 
 def answer_question(question, history):
@@ -151,8 +161,11 @@ def stop_answer(history):
 
 
 def switch_model(model_key):
-    yield (f"Loading {model_label(model_key)}. Large models can take several minutes.",
-           gr.update(interactive=False), gr.update(interactive=False))
+    yield (
+        f"Loading {model_label(model_key)}. Large models can take several minutes.",
+        gr.update(interactive=False),
+        gr.update(interactive=False),
+    )
     try:
         load_model(model_key)
         status = f"{model_label(model_key)} is ready."
@@ -167,12 +180,30 @@ def switch_model(model_key):
 # magenta marks what you can press, as it marks navigation aids on a chart.
 # ---------------------------------------------------------------------------
 magenta = gr.themes.Color(
-    c50="#FBEFF6", c100="#F6DCEB", c200="#EDB9D7", c300="#E08DBD", c400="#CC5C9C", c500="#B93A83",
-    c600="#A8246F", c700="#8A1B5A", c800="#6E1648", c900="#521136", c950="#360A23",
+    c50="#FBEFF6",
+    c100="#F6DCEB",
+    c200="#EDB9D7",
+    c300="#E08DBD",
+    c400="#CC5C9C",
+    c500="#B93A83",
+    c600="#A8246F",
+    c700="#8A1B5A",
+    c800="#6E1648",
+    c900="#521136",
+    c950="#360A23",
 )
 ink = gr.themes.Color(
-    c50="#F5F9FB", c100="#E6EFF4", c200="#CADCE6", c300="#A5C0D0", c400="#6F93AA", c500="#4B7089",
-    c600="#36566D", c700="#274257", c800="#1B3246", c900="#14283C", c950="#0C1A29",
+    c50="#F5F9FB",
+    c100="#E6EFF4",
+    c200="#CADCE6",
+    c300="#A5C0D0",
+    c400="#6F93AA",
+    c500="#4B7089",
+    c600="#36566D",
+    c700="#274257",
+    c800="#1B3246",
+    c900="#14283C",
+    c950="#0C1A29",
 )
 theme = gr.themes.Base(
     primary_hue=magenta,
@@ -268,22 +299,34 @@ def build_demo(models, selected):
                 )
             with gr.Column(scale=2, min_width=260):
                 model = gr.Dropdown(
-                    choices=[(model_label(key), key) for key in models], value=selected,
-                    label="Model", info="Bigger models answer better and more slowly.",
-                    interactive=len(models) > 1, filterable=False,
+                    choices=[(model_label(key), key) for key in models],
+                    value=selected,
+                    label="Model",
+                    info="Bigger models answer better and more slowly.",
+                    interactive=len(models) > 1,
+                    filterable=False,
                 )
                 status = gr.Markdown(f"{model_label(selected)} is ready.", elem_id="mc-status")
 
         with gr.Row():
             with gr.Column(scale=3, min_width=340):
                 chat = gr.Chatbot(
-                    elem_id="mc-chat", height=480, show_label=False, layout="bubble", buttons=["copy"],
+                    elem_id="mc-chat",
+                    height=480,
+                    show_label=False,
+                    layout="bubble",
+                    buttons=["copy"],
                     placeholder="Ask a question below, or pick one of the examples.",
                 )
                 with gr.Row():
                     box = gr.Textbox(
-                        show_label=False, placeholder="For example: which winds are dangerous in the port of Genoa?",
-                        scale=5, lines=1, max_lines=4, autofocus=True, container=False,
+                        show_label=False,
+                        placeholder="For example: which winds are dangerous in the port of Genoa?",
+                        scale=5,
+                        lines=1,
+                        max_lines=4,
+                        autofocus=True,
+                        container=False,
                     )
                     ask = gr.Button("Ask", variant="primary", scale=1, min_width=96)
                     stop = gr.Button("Stop", variant="secondary", scale=1, min_width=96, visible=False)
@@ -315,8 +358,12 @@ if __name__ == "__main__":
     if not models:
         raise SystemExit("No exported model found in model/. Run download_model.py first.")
     parser = argparse.ArgumentParser(description="MarineChat Gradio UI")
-    parser.add_argument("--model", choices=models, default=default_model if default_model in models else models[0],
-                        help="Model loaded at start (it can be changed in the page)")
+    parser.add_argument(
+        "--model",
+        choices=models,
+        default=default_model if default_model in models else models[0],
+        help="Model loaded at start (it can be changed in the page)",
+    )
     parser.add_argument("--no-browser", action="store_true", help="Do not open a browser tab at start")
     args = parser.parse_args()
 

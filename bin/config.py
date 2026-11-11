@@ -71,8 +71,7 @@ default_model = "qwen_0.5b"
 
 def available_models() -> list:
     """Keys of model_dict whose exported model is present on disk."""
-    return [key for key, details in model_dict.items()
-            if (Path(details["model_path"]) / "openvino_model.xml").exists()]
+    return [key for key, details in model_dict.items() if (Path(details["model_path"]) / "openvino_model.xml").exists()]
 
 
 def model_label(model_key: str) -> str:

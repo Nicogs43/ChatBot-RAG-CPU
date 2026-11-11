@@ -1,10 +1,11 @@
+import logging
+import os
+import subprocess
+import sys
+from pathlib import Path
+
 from optimum.intel import OVModelForCausalLM
 from transformers import AutoTokenizer
-import os 
-from pathlib import Path
-import subprocess
-import logging
-import sys
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
@@ -12,11 +13,23 @@ ROOT = Path(__file__).resolve().parent
 
 
 def run_export(weight_format, output_dir, extra_args=()):
-    export_command = ["optimum-cli", "export", "openvino", "--model", hf_model_id,
-                      "--task", "text-generation-with-past", "--weight-format", weight_format,
-                      *extra_args, "--trust-remote-code", str(output_dir)]
+    export_command = [
+        "optimum-cli",
+        "export",
+        "openvino",
+        "--model",
+        hf_model_id,
+        "--task",
+        "text-generation-with-past",
+        "--weight-format",
+        weight_format,
+        *extra_args,
+        "--trust-remote-code",
+        str(output_dir),
+    ]
     logging.info(" ".join(export_command))
     subprocess.run(export_command, check=True)
+
 
 def convert_to_int8():
     if (int8_model_dir / "openvino_model.xml").exists():
@@ -24,7 +37,8 @@ def convert_to_int8():
     int8_model_dir.mkdir(parents=True, exist_ok=True)
     run_export("int8", int8_model_dir)
 
-def convert_to_int4( int4_mode:str, group_size:int = 128, ratio:float = 0.8):
+
+def convert_to_int4(int4_mode: str, group_size: int = 128, ratio: float = 0.8):
     if (int4_model_dir / "openvino_model.xml").exists():
         return
     int4_model_dir.mkdir(parents=True, exist_ok=True)
@@ -34,19 +48,19 @@ def convert_to_int4( int4_mode:str, group_size:int = 128, ratio:float = 0.8):
     run_export("int4", int4_model_dir, int4_compression_args)
 
 
-#insert the model that you want to download
-#if it is from OpenVINO, it will be downloaded directly in IR format
-#otherwise, it will be downloaded in PyTorch format and then converted to IR format
-#model_id = "OpenVINO/Phi-3-mini-128k-instruct-int8-ov"
+# insert the model that you want to download
+# if it is from OpenVINO, it will be downloaded directly in IR format
+# otherwise, it will be downloaded in PyTorch format and then converted to IR format
+# model_id = "OpenVINO/Phi-3-mini-128k-instruct-int8-ov"
 if __name__ == "__main__":
     hf_model_id = input("Insert the model id in HF (model_vendor/actual_model_id): ")
-    #check if the model name is insert in the correct format (model_vendor/actual_model_id)
+    # check if the model name is insert in the correct format (model_vendor/actual_model_id)
     if hf_model_id.count("/") != 1:
         logging.info("The model name must be in the format model_vendor/actual_model_id")
         sys.exit()
-    #split the model_id in model_vendor and actual_model_id
+    # split the model_id in model_vendor and actual_model_id
     model_vendor, model_id = hf_model_id.split("/")
-    local_model_path = str(ROOT / 'model' / model_vendor / model_id)
+    local_model_path = str(ROOT / "model" / model_vendor / model_id)
     os.makedirs(local_model_path, exist_ok=True)
     logging.info(f"Downloading the model {model_id} from {model_vendor}")
 
@@ -56,7 +70,10 @@ if __name__ == "__main__":
         model.save_pretrained(local_model_path)
         tokenizer.save_pretrained(local_model_path)
     else:
-        precision = input("The model is not already in OpenVINO IR format. please select the precision of new compressed model (int4 or int8 or no_compression) and press enter ")
+        precision = input(
+            "The model is not already in OpenVINO IR format. please select the precision of new compressed model "
+            "(int4 or int8 or no_compression) and press enter "
+        )
         if precision not in ["int4", "int8", "no_compression"]:
             logging.info("The precision must be int4 or int8 or no_compression")
             sys.exit()

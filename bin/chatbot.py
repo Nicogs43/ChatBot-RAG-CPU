@@ -1,6 +1,6 @@
 import logging
 import threading
-from typing import Iterator, List, Optional
+from collections.abc import Iterator
 
 import torch
 from jinja2.exceptions import TemplateError
@@ -82,17 +82,17 @@ class RagEngine:
         self._stop = _StopFlag()
         self._lock = threading.Lock()  # one generation at a time per model
 
-    def retrieve(self, question: str) -> List[Document]:
+    def retrieve(self, question: str) -> list[Document]:
         return retrieve_documents(self.vectorstore, question, reranker=self.reranker, **retrieval_config)
 
-    def build_messages(self, question: str, docs: List[Document]) -> List[dict]:
+    def build_messages(self, question: str, docs: list[Document]) -> list[dict]:
         context = "\n\n".join(doc.page_content for doc in docs)
         return [
             {"role": "system", "content": self.system_prompt},
             {"role": "user", "content": USER_PROMPT_TEMPLATE.format(input=question, context=context)},
         ]
 
-    def _apply_chat_template(self, messages: List[dict], **kwargs):
+    def _apply_chat_template(self, messages: list[dict], **kwargs):
         """Render the messages with the model's own chat template."""
         try:
             return self.tokenizer.apply_chat_template(messages, add_generation_prompt=True, **kwargs)
@@ -102,11 +102,11 @@ class RagEngine:
             merged = [{"role": "user", "content": f"{system['content']}\n\n{user['content']}"}]
             return self.tokenizer.apply_chat_template(merged, add_generation_prompt=True, **kwargs)
 
-    def build_prompt(self, question: str, docs: List[Document]) -> str:
+    def build_prompt(self, question: str, docs: list[Document]) -> str:
         """The exact prompt text the model receives (useful for inspection)."""
         return self._apply_chat_template(self.build_messages(question, docs), tokenize=False)
 
-    def stream(self, question: str, docs: Optional[List[Document]] = None) -> Iterator[str]:
+    def stream(self, question: str, docs: list[Document] | None = None) -> Iterator[str]:
         """Yield the answer piece by piece as it is generated.
 
         There is no timeout: on a slow CPU a large model can take more than a

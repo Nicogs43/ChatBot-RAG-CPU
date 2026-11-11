@@ -7,7 +7,9 @@ from config import model_dict
 
 def main():
     parser = argparse.ArgumentParser(description="MarineChat command-line chat")
-    parser.add_argument("--model", choices=list(model_dict), default="phi_int4", help="Model key from config.model_dict")
+    parser.add_argument(
+        "--model", choices=list(model_dict), default="phi_int4", help="Model key from config.model_dict"
+    )
     args = parser.parse_args()
 
     vectorstore, reranker = load_retrieval_resources()

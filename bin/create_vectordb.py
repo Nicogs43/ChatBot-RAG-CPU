@@ -1,8 +1,9 @@
-from vectordb import create_vectordb
-from config import pdf_path, vectorstore_path
 import argparse
-import os
 import logging
+import os
+
+from config import pdf_path, vectorstore_path
+from vectordb import create_vectordb
 
 if __name__ == "__main__":
     # Setup logging
@@ -10,12 +11,21 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Create a vector store from a list of documents")
     parser.add_argument("docs", nargs="*", default=[pdf_path], help="Path(s) to the documents (space-separated)")
-    parser.add_argument("--splitter_name", default="RecursiveCharacter", help="Text splitter strategy (e.g., 'RecursiveCharacter', 'Character')")
+    parser.add_argument(
+        "--splitter_name",
+        default="RecursiveCharacter",
+        help="Text splitter strategy (e.g., 'RecursiveCharacter', 'Character')",
+    )
     parser.add_argument("--chunk_size", type=int, default=400, help="Chunk size in characters")
     parser.add_argument("--chunk_overlap", type=int, default=50, help="Number of characters to overlap between chunks")
-    parser.add_argument("--embedding_model", type=str, default="BAAI/bge-small-en-v1.5", help="Name of the embedding model to use (model_vendor/actual_model_id)")
+    parser.add_argument(
+        "--embedding_model",
+        type=str,
+        default="BAAI/bge-small-en-v1.5",
+        help="Name of the embedding model to use (model_vendor/actual_model_id)",
+    )
     parser.add_argument("--vectorstore_path", type=str, default=vectorstore_path, help="Path to save the vector store")
-    
+
     args = parser.parse_args()
 
     if args.embedding_model.count("/") != 1:
@@ -43,7 +53,7 @@ if __name__ == "__main__":
             args.chunk_size,
             args.chunk_overlap,
             args.embedding_model,
-            args.vectorstore_path
+            args.vectorstore_path,
         )
     except Exception as e:
         logging.error(f"Failed to create vector store: {e}")
