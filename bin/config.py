@@ -67,3 +67,16 @@ model_dict = {
 }
 
 default_model = "qwen_0.5b"
+
+
+def available_models() -> list:
+    """Keys of model_dict whose exported model is present on disk."""
+    return [key for key, details in model_dict.items()
+            if (Path(details["model_path"]) / "openvino_model.xml").exists()]
+
+
+def model_label(model_key: str) -> str:
+    """Readable model name for the UI, e.g. 'Phi-3.5-mini-instruct (int4)'."""
+    parts = Path(model_dict[model_key]["model_path"]).relative_to(ROOT / "model").parts[1:]
+    name, variant = parts[0], parts[1:]
+    return f"{name} ({variant[0]})" if variant else name

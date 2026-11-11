@@ -45,3 +45,4 @@ if you want try the application with a GUI done with Gradio you can execute the 
 ```bash
 uv run python main_gradio.py
 ```
+The page opens at http://127.0.0.1:7860. It streams the answer, shows the passages of the guide it was built from (with their page) and how long the answer took, and lets you switch between the models you have downloaded. Add `--no-browser` on a machine without a display.
